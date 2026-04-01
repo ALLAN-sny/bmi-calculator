@@ -43,7 +43,8 @@ button{
 }
 
 canvas{
-  max-width:300px;
+  width:100% !important;
+  max-width:320px;
   margin:auto;
 }
 </style>
@@ -63,12 +64,12 @@ canvas{
   <h2>Welcome to Smart Health System</h2>
 
   <p>
-    This intelligent platform is designed to monitor and evaluate your body health status using modern biomedical principles.
-    It provides accurate BMI analysis and insights to guide your lifestyle decisions.
-    Experience a smart, simple, and efficient way to understand your health.
+    This intelligent platform is designed to monitor and evaluate your body health status using modern biomedical engineering principles.
+    It provides accurate BMI analysis, visual insights, and expert-level guidance to support informed health decisions.
+    Experience a smart, efficient, and professional approach to understanding your physical well-being.
   </p>
 
-  <p><b>Developed by Eng. Allan | Biomedical Engineer</b></p>
+  <p><b>Developed by Eng. Allan</b></p>
 
   <button onclick="showPage('form')">Start</button>
 </div>
@@ -123,7 +124,7 @@ function login(){
   showPage('welcome');
 }
 
-// CALCULATE BMI + GRAPH
+// CALCULATION + COMMENT
 function calc(){
   let n = document.getElementById("name").value.trim();
   let a = document.getElementById("age").value.trim();
@@ -146,10 +147,24 @@ function calc(){
   let bmi = w / (h * h);
 
   let status = "";
-  if(bmi < 18.5) status = "Underweight";
-  else if(bmi < 25) status = "Normal";
-  else if(bmi < 30) status = "Overweight";
-  else status = "Obese";
+  let comment = "";
+
+  if(bmi < 18.5){
+    status = "Underweight";
+    comment = "Clinical observation suggests insufficient body mass. Nutritional enhancement and medical consultation are recommended.";
+  }
+  else if(bmi < 25){
+    status = "Normal";
+    comment = "Your physiological parameters are within optimal range. Maintain your current lifestyle and balanced nutrition.";
+  }
+  else if(bmi < 30){
+    status = "Overweight";
+    comment = "Elevated body mass detected. Structured physical activity and dietary regulation are strongly advised.";
+  }
+  else{
+    status = "Obese";
+    comment = "Significant health risk identified. Immediate lifestyle intervention and professional medical guidance are required.";
+  }
 
   dataUser = {
     name: n,
@@ -163,6 +178,7 @@ function calc(){
     <p>Age: ${a}</p>
     <p>Your BMI: <b>${dataUser.bmi}</b></p>
     <p>Status: <b>${status}</b></p>
+    <p><i>${comment}</i></p>
   `;
 
   drawChart(bmi);
@@ -170,9 +186,9 @@ function calc(){
   showPage('resultPage');
 }
 
-// DRAW GRAPH
+// GRAPH FIXED
 function drawChart(bmi){
-  let ctx = document.getElementById("chart");
+  let ctx = document.getElementById("chart").getContext("2d");
 
   if(chartInstance){
     chartInstance.destroy();
@@ -181,11 +197,14 @@ function drawChart(bmi){
   chartInstance = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: ['Your BMI'],
+      labels: ['BMI Value'],
       datasets: [{
-        label: 'BMI Value',
+        label: 'Your BMI',
         data: [bmi]
       }]
+    },
+    options:{
+      responsive:true
     }
   });
 }
