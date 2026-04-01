@@ -1,14 +1,50 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Smart Health App</title>
+
 <style>
-body{font-family:Arial;text-align:center;background:#0f2027;color:white}
-.page{display:none;padding:20px}
-.active{display:block}
-input{padding:10px;margin:5px;width:80%;border-radius:10px;border:none}
-button{padding:10px 20px;border:none;border-radius:10px;background:cyan;font-weight:bold}
-.card{background:rgba(255,255,255,0.1);padding:15px;border-radius:15px;margin:15px auto;max-width:300px}
+body{
+  font-family: Arial;
+  text-align: center;
+  background:#0f2027;
+  color:white;
+}
+
+.page{
+  display:none;
+  padding:20px;
+}
+
+.active{
+  display:block;
+}
+
+input{
+  padding:10px;
+  margin:5px;
+  width:80%;
+  border-radius:10px;
+  border:none;
+}
+
+button{
+  padding:10px 20px;
+  border:none;
+  border-radius:10px;
+  background:cyan;
+  font-weight:bold;
+}
+
+.card{
+  background:rgba(255,255,255,0.1);
+  padding:15px;
+  border-radius:15px;
+  margin:15px auto;
+  max-width:300px;
+}
 </style>
 </head>
 
@@ -16,111 +52,139 @@ button{padding:10px 20px;border:none;border-radius:10px;background:cyan;font-wei
 
 <!-- LOGIN -->
 <div id="login" class="page active">
-<h2>Login</h2>
-<input id="user" placeholder="Username"><br>
-<button onclick="login()">Next</button>
+  <h2>Login</h2>
+  <input id="user" placeholder="Username"><br>
+  <button onclick="login()">Next</button>
 </div>
 
 <!-- WELCOME -->
 <div id="welcome" class="page">
-<h2>Welcome to Smart Health</h2>
-<p>Eng. Allan | Biomedical Engineer</p>
-<button onclick="show('form')">Start</button>
+  <h2>Welcome to Smart Health</h2>
+  <p>Eng. Allan | Biomedical Engineer</p>
+  <button onclick="showPage('form')">Start</button>
 </div>
 
 <!-- FORM -->
 <div id="form" class="page">
-<h2>Enter Details</h2>
-<input id="name" placeholder="Name"><br>
-<input id="age" type="number" placeholder="Age"><br>
-<input id="height" type="number" placeholder="Height (m)"><br>
-<input id="weight" type="number" placeholder="Weight (kg)"><br>
-<button onclick="calc()">Next</button>
+  <h2>Enter Details</h2>
+  <input id="name" placeholder="Name"><br>
+  <input id="age" type="number" placeholder="Age"><br>
+  <input id="height" type="number" placeholder="Height (m)"><br>
+  <input id="weight" type="number" placeholder="Weight (kg)"><br>
+  <button onclick="calc()">Next</button>
 </div>
 
 <!-- RESULT -->
 <div id="resultPage" class="page">
-<h2>Result</h2>
-<div class="card" id="result"></div>
-<button onclick="save()">Save</button>
-<button onclick="showHistory()">History</button>
+  <h2>Result</h2>
+  <div class="card" id="result"></div>
+  <button onclick="save()">Save</button>
+  <button onclick="showHistory()">History</button>
 </div>
 
 <!-- HISTORY -->
 <div id="historyPage" class="page">
-<h2>History</h2>
-<div id="history"></div>
-<button onclick="show('welcome')">Back</button>
+  <h2>History</h2>
+  <div id="history"></div>
+  <button onclick="showPage('welcome')">Back</button>
 </div>
 
 <script>
-let dataUser={};
 
-// NAVIGATION
-function show(id){
-document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-document.getElementById(id).classList.add('active');
+let dataUser = {};
+
+// PAGE SWITCH
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
 }
 
 // LOGIN
 function login(){
-if(!user.value){
-alert("Enter username");
-return;
-}
-show('welcome');
+  let u = document.getElementById("user").value.trim();
+
+  if(u === ""){
+    alert("Enter username");
+    return;
+  }
+
+  showPage('welcome');
 }
 
-// CALCULATION
+// CALCULATE BMI (FIXED)
 function calc(){
-let n=name.value;
-let a=age.value;
-let h=height.value;
-let w=weight.value;
+  let n = document.getElementById("name").value.trim();
+  let a = document.getElementById("age").value.trim();
+  let h = document.getElementById("height").value.trim();
+  let w = document.getElementById("weight").value.trim();
 
-if(!n||!a||!h||!w){
-alert("Fill all fields");
-return;
-}
+  if(n === "" || a === "" || h === "" || w === ""){
+    alert("Fill all fields");
+    return;
+  }
 
-let bmi=w/(h*h);
-let status=bmi<18.5?"Underweight":bmi<25?"Normal":bmi<30?"Overweight":"Obese";
+  h = parseFloat(h);
+  w = parseFloat(w);
 
-dataUser={n,a,bmi:bmi.toFixed(2),status};
+  if(h <= 0 || w <= 0){
+    alert("Enter valid numbers");
+    return;
+  }
 
-document.getElementById("result").innerHTML=`
-<h3>${n}</h3>
-<p>Age: ${a}</p>
-<p>BMI: ${dataUser.bmi}</p>
-<p>Status: ${status}</p>
-`;
+  let bmi = w / (h * h);
 
-show('resultPage');
+  let status = "";
+  if(bmi < 18.5) status = "Underweight";
+  else if(bmi < 25) status = "Normal";
+  else if(bmi < 30) status = "Overweight";
+  else status = "Obese";
+
+  dataUser = {
+    name: n,
+    age: a,
+    bmi: bmi.toFixed(2),
+    status: status
+  };
+
+  document.getElementById("result").innerHTML = `
+    <h3>${n}</h3>
+    <p>Age: ${a}</p>
+    <p>BMI: ${dataUser.bmi}</p>
+    <p>Status: ${status}</p>
+  `;
+
+  showPage('resultPage');
 }
 
 // SAVE
 function save(){
-let arr=JSON.parse(localStorage.getItem("records"))||[];
-arr.push(dataUser);
-localStorage.setItem("records",JSON.stringify(arr));
-alert("Saved!");
+  let arr = JSON.parse(localStorage.getItem("records")) || [];
+  arr.push(dataUser);
+  localStorage.setItem("records", JSON.stringify(arr));
+  alert("Saved successfully!");
 }
 
 // HISTORY
 function showHistory(){
-let arr=JSON.parse(localStorage.getItem("records"))||[];
-let h="";
-arr.forEach(u=>{
-h+=`
-<div class="card">
-<h4>${u.n}</h4>
-<p>BMI: ${u.bmi}</p>
-<p>${u.status}</p>
-</div>`;
-});
-document.getElementById("history").innerHTML=h;
-show('historyPage');
+  let arr = JSON.parse(localStorage.getItem("records")) || [];
+
+  let output = "";
+
+  arr.forEach(u => {
+    output += `
+      <div class="card">
+        <h4>${u.name}</h4>
+        <p>Age: ${u.age}</p>
+        <p>BMI: ${u.bmi}</p>
+        <p>${u.status}</p>
+      </div>
+    `;
+  });
+
+  document.getElementById("history").innerHTML = output;
+  showPage('historyPage');
 }
+
 </script>
 
 </body>
