@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smart Health Pro | Eng Allan</title>
+<title>Smart Health Pro</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -35,7 +35,7 @@ img{width:100px;border-radius:50%}
 <div class="page" id="welcome">
 <h1>SMART HEALTH SYSTEM</h1>
 <p>Eng. Allan | Biomedical Engineer</p>
-<button onclick="go(3)">Start</button><br><br>
+<button onclick="showPage('form')">Start</button><br><br>
 <button onclick="theme()">Theme</button>
 </div>
 
@@ -57,13 +57,14 @@ img{width:100px;border-radius:50%}
 <canvas id="chart"></canvas><br>
 <button onclick="save()">Save</button>
 <button onclick="pdf()">Export PDF</button>
-<button onclick="historyPage()">History</button>
+<button onclick="showHistory()">History</button>
 </div>
 
 <!-- HISTORY -->
 <div class="page" id="historyPage">
 <h2>History</h2>
 <div id="history"></div>
+<button onclick="showPage('welcome')">Back</button>
 </div>
 
 <audio id="sound" src="https://www.soundjay.com/buttons/sounds/button-3.mp3"></audio>
@@ -71,19 +72,24 @@ img{width:100px;border-radius:50%}
 <script>
 let dataUser={};
 
-// NAVIGATION
-function go(p){
-document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
-document.getElementById(Object.keys({1:"login",2:"welcome",3:"form",4:"resultPage",5:"historyPage"})[p-1]).classList.add('active');
+// FIXED NAVIGATION
+function showPage(id){
+document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+document.getElementById(id).classList.add('active');
 }
 
-// LOGIN SYSTEM
+// LOGIN
 function login(){
-let u=user.value, p=pass.value;
-if(!u||!p)return alert("Fill fields");
+let u=document.getElementById("user").value;
+let p=document.getElementById("pass").value;
+
+if(!u || !p){
+alert("Fill all fields");
+return;
+}
 
 localStorage.setItem("login",u);
-go(2);
+showPage('welcome'); // FIXED
 }
 
 // THEME
@@ -92,24 +98,31 @@ document.body.classList.toggle("light");
 document.body.classList.toggle("dark");
 }
 
-// CALCULATION
+// CALCULATE
 function calc(){
-let n=name.value,a=age.value,h=height.value,w=weight.value;
-if(!n||!a||!h||!w)return alert("Complete");
+let n=name.value;
+let a=age.value;
+let h=height.value;
+let w=weight.value;
+
+if(!n||!a||!h||!w){
+alert("Complete all fields");
+return;
+}
 
 let bmi=w/(h*h);
 let status=bmi<18.5?"Underweight":bmi<25?"Normal":bmi<30?"Overweight":"Obese";
-let advice=status=="Normal"?"Perfect!":
+let advice=status=="Normal"?"Perfect health":
 status=="Underweight"?"Eat more balanced diet":
 "Exercise & reduce fats";
 
 dataUser={n,a,bmi:bmi.toFixed(2),status};
 
 let reader=new FileReader();
-reader.onload=e=>{
+reader.onload=function(e){
 dataUser.img=e.target.result;
 
-result.innerHTML=`
+document.getElementById("result").innerHTML=`
 <img src="${dataUser.img}">
 <h3>${n}</h3>
 <p>Age: ${a}</p>
@@ -120,15 +133,27 @@ result.innerHTML=`
 
 draw(bmi);
 };
-reader.readAsDataURL(photo.files[0]);
 
-sound.play();
-go(4);
+if(photo.files[0]){
+reader.readAsDataURL(photo.files[0]);
+}else{
+document.getElementById("result").innerHTML=`
+<h3>${n}</h3>
+<p>Age: ${a}</p>
+<p>BMI: ${dataUser.bmi}</p>
+<p>Status: ${status}</p>
+<p><b>AI:</b> ${advice}</p>
+`;
+draw(bmi);
+}
+
+document.getElementById("sound").play();
+showPage('resultPage');
 }
 
 // GRAPH
 function draw(bmi){
-new Chart(chart,{
+new Chart(document.getElementById("chart"),{
 type:"bar",
 data:{labels:["BMI"],datasets:[{data:[bmi]}]}
 });
@@ -143,22 +168,23 @@ alert("Saved!");
 }
 
 // HISTORY
-function historyPage(){
+function showHistory(){
 let arr=JSON.parse(localStorage.getItem("records"))||[];
-history.innerHTML="";
+let h="";
 arr.forEach(u=>{
-history.innerHTML+=`
+h+=`
 <div class="card">
-<img src="${u.img}">
+<img src="${u.img || ''}">
 <h4>${u.n}</h4>
 <p>BMI:${u.bmi}</p>
 <p>${u.status}</p>
 </div>`;
 });
-go(5);
+document.getElementById("history").innerHTML=h;
+showPage('historyPage');
 }
 
-// PDF EXPORT
+// PDF
 async function pdf(){
 const { jsPDF } = window.jspdf;
 let doc=new jsPDF();
