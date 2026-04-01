@@ -1,104 +1,77 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smart Health Pro</title>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
+<title>Smart Health App</title>
 <style>
-body{font-family:Arial;margin:0;text-align:center;transition:0.5s}
-.dark{background:#0f2027;color:white}
-.light{background:#f2f2f2;color:black}
+body{font-family:Arial;text-align:center;background:#0f2027;color:white}
 .page{display:none;padding:20px}
 .active{display:block}
 input{padding:10px;margin:5px;width:80%;border-radius:10px;border:none}
 button{padding:10px 20px;border:none;border-radius:10px;background:cyan;font-weight:bold}
-.card{background:rgba(0,0,0,0.2);padding:15px;border-radius:15px;margin:15px auto;max-width:400px}
-img{width:100px;border-radius:50%}
+.card{background:rgba(255,255,255,0.1);padding:15px;border-radius:15px;margin:15px auto;max-width:300px}
 </style>
 </head>
 
-<body class="dark">
+<body>
 
 <!-- LOGIN -->
-<div class="page active" id="login">
-<h2>Login / Register</h2>
+<div id="login" class="page active">
+<h2>Login</h2>
 <input id="user" placeholder="Username"><br>
-<input id="pass" type="password" placeholder="Password"><br>
-<button onclick="login()">Enter</button>
+<button onclick="login()">Next</button>
 </div>
 
 <!-- WELCOME -->
-<div class="page" id="welcome">
-<h1>SMART HEALTH SYSTEM</h1>
+<div id="welcome" class="page">
+<h2>Welcome to Smart Health</h2>
 <p>Eng. Allan | Biomedical Engineer</p>
-<button onclick="showPage('form')">Start</button><br><br>
-<button onclick="theme()">Theme</button>
+<button onclick="show('form')">Start</button>
 </div>
 
 <!-- FORM -->
-<div class="page" id="form">
+<div id="form" class="page">
 <h2>Enter Details</h2>
 <input id="name" placeholder="Name"><br>
 <input id="age" type="number" placeholder="Age"><br>
 <input id="height" type="number" placeholder="Height (m)"><br>
 <input id="weight" type="number" placeholder="Weight (kg)"><br>
-<input id="photo" type="file"><br>
 <button onclick="calc()">Next</button>
 </div>
 
 <!-- RESULT -->
-<div class="page" id="resultPage">
+<div id="resultPage" class="page">
 <h2>Result</h2>
-<div id="result"></div>
-<canvas id="chart"></canvas><br>
+<div class="card" id="result"></div>
 <button onclick="save()">Save</button>
-<button onclick="pdf()">Export PDF</button>
 <button onclick="showHistory()">History</button>
 </div>
 
 <!-- HISTORY -->
-<div class="page" id="historyPage">
+<div id="historyPage" class="page">
 <h2>History</h2>
 <div id="history"></div>
-<button onclick="showPage('welcome')">Back</button>
+<button onclick="show('welcome')">Back</button>
 </div>
-
-<audio id="sound" src="https://www.soundjay.com/buttons/sounds/button-3.mp3"></audio>
 
 <script>
 let dataUser={};
 
-// FIXED NAVIGATION
-function showPage(id){
+// NAVIGATION
+function show(id){
 document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
 document.getElementById(id).classList.add('active');
 }
 
 // LOGIN
 function login(){
-let u=document.getElementById("user").value;
-let p=document.getElementById("pass").value;
-
-if(!u || !p){
-alert("Fill all fields");
+if(!user.value){
+alert("Enter username");
 return;
 }
-
-localStorage.setItem("login",u);
-showPage('welcome'); // FIXED
+show('welcome');
 }
 
-// THEME
-function theme(){
-document.body.classList.toggle("light");
-document.body.classList.toggle("dark");
-}
-
-// CALCULATE
+// CALCULATION
 function calc(){
 let n=name.value;
 let a=age.value;
@@ -106,57 +79,23 @@ let h=height.value;
 let w=weight.value;
 
 if(!n||!a||!h||!w){
-alert("Complete all fields");
+alert("Fill all fields");
 return;
 }
 
 let bmi=w/(h*h);
 let status=bmi<18.5?"Underweight":bmi<25?"Normal":bmi<30?"Overweight":"Obese";
-let advice=status=="Normal"?"Perfect health":
-status=="Underweight"?"Eat more balanced diet":
-"Exercise & reduce fats";
 
 dataUser={n,a,bmi:bmi.toFixed(2),status};
 
-let reader=new FileReader();
-reader.onload=function(e){
-dataUser.img=e.target.result;
-
-document.getElementById("result").innerHTML=`
-<img src="${dataUser.img}">
-<h3>${n}</h3>
-<p>Age: ${a}</p>
-<p>BMI: ${dataUser.bmi}</p>
-<p>Status: ${status}</p>
-<p><b>AI:</b> ${advice}</p>
-`;
-
-draw(bmi);
-};
-
-if(photo.files[0]){
-reader.readAsDataURL(photo.files[0]);
-}else{
 document.getElementById("result").innerHTML=`
 <h3>${n}</h3>
 <p>Age: ${a}</p>
 <p>BMI: ${dataUser.bmi}</p>
 <p>Status: ${status}</p>
-<p><b>AI:</b> ${advice}</p>
 `;
-draw(bmi);
-}
 
-document.getElementById("sound").play();
-showPage('resultPage');
-}
-
-// GRAPH
-function draw(bmi){
-new Chart(document.getElementById("chart"),{
-type:"bar",
-data:{labels:["BMI"],datasets:[{data:[bmi]}]}
-});
+show('resultPage');
 }
 
 // SAVE
@@ -174,24 +113,13 @@ let h="";
 arr.forEach(u=>{
 h+=`
 <div class="card">
-<img src="${u.img || ''}">
 <h4>${u.n}</h4>
-<p>BMI:${u.bmi}</p>
+<p>BMI: ${u.bmi}</p>
 <p>${u.status}</p>
 </div>`;
 });
 document.getElementById("history").innerHTML=h;
-showPage('historyPage');
-}
-
-// PDF
-async function pdf(){
-const { jsPDF } = window.jspdf;
-let doc=new jsPDF();
-doc.text(`Name: ${dataUser.n}`,10,10);
-doc.text(`BMI: ${dataUser.bmi}`,10,20);
-doc.text(`Status: ${dataUser.status}`,10,30);
-doc.save("report.pdf");
+show('historyPage');
 }
 </script>
 
