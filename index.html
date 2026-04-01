@@ -32,6 +32,7 @@ button{
   border-radius:10px;
   background:cyan;
   font-weight:bold;
+  cursor:pointer;
 }
 
 .card{
@@ -69,7 +70,10 @@ canvas{
     Experience a smart, efficient, and professional approach to understanding your physical well-being.
   </p>
 
-  <p><b>Developed by Eng. Allan</b></p>
+  <p>
+    <b>Developed by Eng. Allan</b><br>
+    Biomedical Engineering | Muhimbili University of Health and Allied Sciences (MUHAS)
+  </p>
 
   <button onclick="showPage('form')">Start</button>
 </div>
@@ -124,7 +128,7 @@ function login(){
   showPage('welcome');
 }
 
-// CALCULATION + COMMENT
+// CALCULATION + EXPERT COMMENT
 function calc(){
   let n = document.getElementById("name").value.trim();
   let a = document.getElementById("age").value.trim();
@@ -186,7 +190,7 @@ function calc(){
   showPage('resultPage');
 }
 
-// GRAPH FIXED
+// DRAW GRAPH
 function drawChart(bmi){
   let ctx = document.getElementById("chart").getContext("2d");
 
@@ -200,11 +204,17 @@ function drawChart(bmi){
       labels: ['BMI Value'],
       datasets: [{
         label: 'Your BMI',
-        data: [bmi]
+        data: [bmi],
+        backgroundColor: 'rgba(0,255,255,0.7)'
       }]
     },
     options:{
-      responsive:true
+      responsive:true,
+      scales: {
+        y: {
+          beginAtZero:true
+        }
+      }
     }
   });
 }
