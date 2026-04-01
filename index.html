@@ -1,113 +1,171 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Eng. Allan Health App</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Health Pro | Eng Allan</title>
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
-      color: white;
-      text-align: center;
-      padding: 20px;
-    }
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-    .card {
-      background: rgba(255,255,255,0.1);
-      padding: 20px;
-      border-radius: 15px;
-      margin: 20px auto;
-      width: 90%;
-      max-width: 400px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
-    }
-
-    input {
-      width: 80%;
-      padding: 10px;
-      margin: 10px;
-      border-radius: 10px;
-      border: none;
-    }
-
-    button {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 10px;
-      background: #00c6ff;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #0072ff;
-    }
-
-    h1 {
-      font-size: 24px;
-      margin-bottom: 5px;
-    }
-
-    .brand {
-      font-size: 14px;
-      color: #ccc;
-      margin-bottom: 20px;
-    }
-
-    footer {
-      margin-top: 30px;
-      font-size: 12px;
-      color: #aaa;
-    }
-  </style>
+<style>
+body{font-family:Arial;margin:0;text-align:center;transition:0.5s}
+.dark{background:#0f2027;color:white}
+.light{background:#f2f2f2;color:black}
+.page{display:none;padding:20px}
+.active{display:block}
+input{padding:10px;margin:5px;width:80%;border-radius:10px;border:none}
+button{padding:10px 20px;border:none;border-radius:10px;background:cyan;font-weight:bold}
+.card{background:rgba(0,0,0,0.2);padding:15px;border-radius:15px;margin:15px auto;max-width:400px}
+img{width:100px;border-radius:50%}
+</style>
 </head>
 
-<body>
+<body class="dark">
 
-  <h1>🏥 Eng. Allan Health App</h1>
-  <div class="brand">Biomedical Engineer | MUHAS</div>
+<!-- LOGIN -->
+<div class="page active" id="login">
+<h2>Login / Register</h2>
+<input id="user" placeholder="Username"><br>
+<input id="pass" type="password" placeholder="Password"><br>
+<button onclick="login()">Enter</button>
+</div>
 
-  <div class="card">
-    <h2>BMI Calculator</h2>
+<!-- WELCOME -->
+<div class="page" id="welcome">
+<h1>SMART HEALTH SYSTEM</h1>
+<p>Eng. Allan | Biomedical Engineer</p>
+<button onclick="go(3)">Start</button><br><br>
+<button onclick="theme()">Theme</button>
+</div>
 
-    <input type="number" id="weight" placeholder="Weight (kg)">
-    <input type="number" id="height" placeholder="Height (m)">
+<!-- FORM -->
+<div class="page" id="form">
+<h2>Enter Details</h2>
+<input id="name" placeholder="Name"><br>
+<input id="age" type="number" placeholder="Age"><br>
+<input id="height" type="number" placeholder="Height (m)"><br>
+<input id="weight" type="number" placeholder="Weight (kg)"><br>
+<input id="photo" type="file"><br>
+<button onclick="calc()">Next</button>
+</div>
 
-    <button onclick="calculateBMI()">Check BMI</button>
+<!-- RESULT -->
+<div class="page" id="resultPage">
+<h2>Result</h2>
+<div id="result"></div>
+<canvas id="chart"></canvas><br>
+<button onclick="save()">Save</button>
+<button onclick="pdf()">Export PDF</button>
+<button onclick="historyPage()">History</button>
+</div>
 
-    <p id="result"></p>
-    <p id="advice"></p>
-  </div>
+<!-- HISTORY -->
+<div class="page" id="historyPage">
+<h2>History</h2>
+<div id="history"></div>
+</div>
 
-  <footer>
-    Developed by Eng. Allan (Biomedical Engineer - MUHAS) <br>
-    ⚠️ For educational purposes only
-  </footer>
+<audio id="sound" src="https://www.soundjay.com/buttons/sounds/button-3.mp3"></audio>
 
 <script>
-function calculateBMI() {
-  let w = document.getElementById("weight").value;
-  let h = document.getElementById("height").value;
+let dataUser={};
 
-  let bmi = w / (h * h);
-  let message = "";
-  let advice = "";
+// NAVIGATION
+function go(p){
+document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+document.getElementById(Object.keys({1:"login",2:"welcome",3:"form",4:"resultPage",5:"historyPage"})[p-1]).classList.add('active');
+}
 
-  if (bmi < 18.5) {
-    message = "Underweight";
-    advice = "Eat nutritious foods and consult a specialist.";
-  } else if (bmi < 25) {
-    message = "Normal";
-    advice = "Keep maintaining your healthy lifestyle!";
-  } else {
-    message = "Overweight";
-    advice = "Exercise regularly and manage your diet.";
-  }
+// LOGIN SYSTEM
+function login(){
+let u=user.value, p=pass.value;
+if(!u||!p)return alert("Fill fields");
 
-  document.getElementById("result").innerText = "BMI: " + bmi.toFixed(2) + " (" + message + ")";
-  document.getElementById("advice").innerText = advice;
+localStorage.setItem("login",u);
+go(2);
+}
+
+// THEME
+function theme(){
+document.body.classList.toggle("light");
+document.body.classList.toggle("dark");
+}
+
+// CALCULATION
+function calc(){
+let n=name.value,a=age.value,h=height.value,w=weight.value;
+if(!n||!a||!h||!w)return alert("Complete");
+
+let bmi=w/(h*h);
+let status=bmi<18.5?"Underweight":bmi<25?"Normal":bmi<30?"Overweight":"Obese";
+let advice=status=="Normal"?"Perfect!":
+status=="Underweight"?"Eat more balanced diet":
+"Exercise & reduce fats";
+
+dataUser={n,a,bmi:bmi.toFixed(2),status};
+
+let reader=new FileReader();
+reader.onload=e=>{
+dataUser.img=e.target.result;
+
+result.innerHTML=`
+<img src="${dataUser.img}">
+<h3>${n}</h3>
+<p>Age: ${a}</p>
+<p>BMI: ${dataUser.bmi}</p>
+<p>Status: ${status}</p>
+<p><b>AI:</b> ${advice}</p>
+`;
+
+draw(bmi);
+};
+reader.readAsDataURL(photo.files[0]);
+
+sound.play();
+go(4);
+}
+
+// GRAPH
+function draw(bmi){
+new Chart(chart,{
+type:"bar",
+data:{labels:["BMI"],datasets:[{data:[bmi]}]}
+});
+}
+
+// SAVE
+function save(){
+let arr=JSON.parse(localStorage.getItem("records"))||[];
+arr.push(dataUser);
+localStorage.setItem("records",JSON.stringify(arr));
+alert("Saved!");
+}
+
+// HISTORY
+function historyPage(){
+let arr=JSON.parse(localStorage.getItem("records"))||[];
+history.innerHTML="";
+arr.forEach(u=>{
+history.innerHTML+=`
+<div class="card">
+<img src="${u.img}">
+<h4>${u.n}</h4>
+<p>BMI:${u.bmi}</p>
+<p>${u.status}</p>
+</div>`;
+});
+go(5);
+}
+
+// PDF EXPORT
+async function pdf(){
+const { jsPDF } = window.jspdf;
+let doc=new jsPDF();
+doc.text(`Name: ${dataUser.n}`,10,10);
+doc.text(`BMI: ${dataUser.bmi}`,10,20);
+doc.text(`Status: ${dataUser.status}`,10,30);
+doc.save("report.pdf");
 }
 </script>
 
