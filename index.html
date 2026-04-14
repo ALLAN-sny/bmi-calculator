@@ -166,10 +166,7 @@
             <div class="card" style="text-align: center;">
                 <span id="res-s" style="padding: 6px 16px; border-radius: 12px; font-weight: 800; font-size: 0.7rem; letter-spacing: 1px;">ANALYSIS READY</span>
                 <div class="bmi-hero" id="res-bmi">24.5</div>
-                
-                <div style="position: relative; height: 160px; margin-top: 10px;">
-                    <canvas id="gChart"></canvas>
-                </div>
+                <div style="position: relative; height: 160px; margin-top: 10px;"><canvas id="gChart"></canvas></div>
 
                 <div style="text-align: left; background: rgba(0,0,0,0.25); padding: 25px; border-radius: 25px; border-left: 5px solid var(--primary); margin-top: 20px;">
                     <h4 style="margin: 0 0 10px;"><i class="fas fa-stethoscope"></i> Clinical Advice</h4>
@@ -181,35 +178,71 @@
 
         <div id="p-history" class="page">
             <h2 style="font-weight: 800;">Health Archives 📊</h2>
-            <div class="card" style="padding: 15px;">
-                <div style="position: relative; height: 180px;">
-                    <canvas id="tChart"></canvas>
-                </div>
-            </div>
+            <div class="card" style="padding: 15px;"><div style="position: relative; height: 180px;"><canvas id="tChart"></canvas></div></div>
             <div id="h-list"></div>
         </div>
 
         <div id="p-tips" class="page">
             <h2 style="font-weight: 800;">Medical Library 📚</h2>
+            
             <div class="card" style="border-left: 4px solid #10b981;">
-                <h4>Balanced Nutrition</h4>
-                <p style="font-size: 0.8rem; color: var(--text-dim);">Prioritize high-fiber vegetables and lean proteins.</p>
+                <h4 style="margin:0; color:#10b981;">1. Metabolic Equilibrium</h4>
+                <p style="font-size: 0.8rem; color: var(--text-dim); line-height: 1.6; margin-top: 10px;">
+                    To maintain a healthy BMI, focus on nutrient density rather than just calorie counting. Incorporate fiber-rich vegetables (Spinach, Broccoli) and complex carbohydrates (Sweet potatoes, Brown rice) to stabilize blood glucose levels and prevent insulin spikes.
+                </p>
+            </div>
+
+            <div class="card" style="border-left: 4px solid var(--primary);">
+                <h4 style="margin:0; color:var(--primary);">2. Hydration & Cellular Health</h4>
+                <p style="font-size: 0.8rem; color: var(--text-dim); line-height: 1.6; margin-top: 10px;">
+                    Water is a critical solvent for biochemical reactions. Proper hydration (approx. 3.7L for men, 2.7L for women) supports kidney function and metabolic efficiency. In the Dar es Salaam climate, electrolyte balance is equally vital to prevent heat-related fatigue.
+                </p>
+            </div>
+
+            <div class="card" style="border-left: 4px solid #f59e0b;">
+                <h4 style="margin:0; color:#f59e0b;">3. Cardiovascular Bio-energetics</h4>
+                <p style="font-size: 0.8rem; color: var(--text-dim); line-height: 1.6; margin-top: 10px;">
+                    Engaging in at least 150 minutes of moderate-intensity aerobic activity per week strengthens the myocardium and increases VO2 max. This optimization of the cardiovascular system is essential for long-term respiratory health and efficient weight management.
+                </p>
+            </div>
+
+            <div class="card" style="border-left: 4px solid #ef4444;">
+                <h4 style="margin:0; color:#ef4444;">4. Sleep & Endocrine Balance</h4>
+                <p style="font-size: 0.8rem; color: var(--text-dim); line-height: 1.6; margin-top: 10px;">
+                    Quality sleep (7-9 hours) is mandatory for regulating hunger hormones like ghrelin and leptin. Sleep deprivation can lead to metabolic syndrome and an increased risk of Type 2 Diabetes.
+                </p>
             </div>
         </div>
 
         <div id="p-about" class="page">
             <div style="text-align: center;">
                 <div style="width: 110px; height: 110px; background: var(--glass); border-radius: 40px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--border); margin-bottom: 25px;">
-                    <i class="fas fa-code-branch" style="font-size: 3.5rem; color: var(--primary);"></i>
+                    <i class="fas fa-microchip" style="font-size: 3.5rem; color: var(--primary);"></i>
                 </div>
                 <h2 style="margin:0;">Bionex Company Ltd</h2>
-                <p style="color: var(--text-dim); font-size: 0.95rem;">Biomedical Innovation at MUHAS.</p>
+                <p style="color: var(--text-dim); font-size: 0.95rem;">Future of Biomedical Engineering</p>
+                
                 <div class="card" style="text-align: left; margin-top: 30px;">
-                    <h4 style="margin:0 0 10px; color: var(--primary);">Founder Profile</h4>
-                    <p style="font-size: 0.9rem; color: #cbd5e1; line-height: 1.6;">
-                        Architected by <b>Eng. Allan</b>.
+                    <h4 style="margin:0 0 10px; color: var(--primary);">Visionary: Eng. Allan Joseph</h4>
+                    <p style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.7;">
+                        <b>Eng. Allan</b> is a dedicated first-year student at <b>Muhimbili University of Health and Allied Sciences (MUHAS)</b>, pursuing a degree in Biomedical Engineering. He is the founder and lead developer at <b>Bionex Company Limited</b>.
+                    </p>
+                    <p style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.7; margin-top: 10px;">
+                        His mission is to bridge the gap between traditional medicine and modern technology by developing smart diagnostic tools, medical software, and innovative clinical devices designed to improve patient outcomes across Tanzania and beyond.
                     </p>
                 </div>
+
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 0.7rem; color: var(--text-dim); letter-spacing: 2px;">PROJECT CODEBASE</div>
+                    <div style="font-weight: 800; font-size: 1.1rem; margin-top: 5px;">MUHAS-BIONEX-V5.2-LATEST</div>
+                    <div style="margin-top: 20px; display: flex; justify-content: center; gap: 25px; font-size: 1.8rem;">
+                        <i class="fab fa-github"></i> 
+                        <i class="fab fa-linkedin" style="color:#0077b5"></i> 
+                        <i class="fas fa-envelope" style="color:var(--primary)"></i>
+                    </div>
+                </div>
+                
+                <p style="font-size: 0.65rem; color: var(--text-dim); margin-top: 20px;">© 2026 Bionex Innovations. All Rights Reserved.</p>
             </div>
         </div>
 
@@ -223,151 +256,58 @@
         <div class="nav-link" id="n-about" onclick="nav('about')"><i class="fas fa-user-gear"></i></div>
     </div>
 
-    <div class="modal-wrap" id="gModal">
-        <div class="modal-card">
-            <h2 style="margin:0;">Select Identity</h2>
-            <div class="g-opt" onclick="setG('Male', '👨‍⚕️')"><span>👨‍⚕️</span> MALE</div>
-            <div class="g-opt" onclick="setG('Female', '👩‍⚕️')"><span>👩‍⚕️</span> FEMALE</div>
-        </div>
-    </div>
+    <div class="modal-wrap" id="gModal"><div class="modal-card"><h2 style="margin:0;">Select Identity</h2><div class="g-opt" onclick="setG('Male', '👨‍⚕️')"><span>👨‍⚕️</span> MALE</div><div class="g-opt" onclick="setG('Female', '👩‍⚕️')"><span>👩‍⚕️</span> FEMALE</div></div></div>
 
 <script>
     let sex = '', gc, tc;
-
     function u(id, v) { document.getElementById('v-' + id).innerText = v; }
     function openG() { document.getElementById('gModal').style.display = 'flex'; }
     function setG(g, e) {
-        sex = g;
-        document.getElementById('txt-g').innerText = e + ' ' + g;
+        sex = g; document.getElementById('txt-g').innerText = e + ' ' + g;
         document.getElementById('txt-g').style.color = 'var(--primary)';
         document.getElementById('gModal').style.display = 'none';
     }
-
     function nav(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById('p-' + id).classList.add('active');
         document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-        let targetNav = (id === 'result' || id === 'calc') ? 'calc' : id;
-        if(document.getElementById('n-' + targetNav)) document.getElementById('n-' + targetNav).classList.add('active');
+        let t = (id === 'result' || id === 'calc') ? 'calc' : id;
+        if(document.getElementById('n-' + t)) document.getElementById('n-' + t).classList.add('active');
         if(id === 'history') loadHistory();
     }
-
     function calculate() {
-        const name = document.getElementById('in-name').value;
-        const w = parseFloat(document.getElementById('in-w').value);
-        const h = parseFloat(document.getElementById('in-h').value);
-        if(!name || !sex) return alert("Please enter name and gender! ⚠️");
-
+        const name = document.getElementById('in-name').value, w = parseFloat(document.getElementById('in-w').value), h = parseFloat(document.getElementById('in-h').value);
+        if(!name || !sex) return alert("Missing clinical data! ⚠️");
         const bmi = (w / (h*h)).toFixed(1);
-        let s = "NORMAL RANGE", c = "#10b981", a = `Patient ${name}, your markers are optimal. 🍏`;
-
-        if(bmi < 18.5) { s = "UNDERWEIGHT"; c = "#f59e0b"; a = `Note for ${name}: Low mass detected. 🥣`; }
-        else if(bmi >= 25 && bmi < 30) { s = "OVERWEIGHT"; c = "#ef4444"; a = `Warning for ${name}: Adipose shift. 🏃‍♀️`; }
-        else if(bmi >= 30) { s = "OBESE 🚨"; c = "#991b1b"; a = `Critical: Consult specialist. 🏥`; }
-
-        document.getElementById('res-bmi').innerText = bmi;
-        document.getElementById('res-bmi').style.color = c;
-        document.getElementById('res-s').innerText = s;
-        document.getElementById('res-s').style.background = c + "33";
-        document.getElementById('res-s').style.color = c;
-        document.getElementById('res-a').innerText = a;
-
+        let s = "HEALTHY RANGE", c = "#10b981", a = `Hello Patient ${name}, your current physiological markers are within the clinical optimal range. 🍏`;
+        if(bmi < 18.5) { s = "UNDERWEIGHT"; c = "#f59e0b"; a = `Note for ${name}: Your body mass is below baseline. 🥣`; }
+        else if(bmi >= 25 && bmi < 30) { s = "OVERWEIGHT"; c = "#ef4444"; a = `Warning for ${name}: Adipose shift detected. 🏃‍♀️`; }
+        else if(bmi >= 30) { s = "OBESE 🚨"; c = "#991b1b"; a = `Critical: Consult MUHAS wing. 🏥`; }
+        document.getElementById('res-bmi').innerText = bmi; document.getElementById('res-bmi').style.color = c;
+        document.getElementById('res-s').innerText = s; document.getElementById('res-s').style.background = c + "33";
+        document.getElementById('res-s').style.color = c; document.getElementById('res-a').innerText = a;
         window.currentData = { name, bmi, s, c, date: new Date().toLocaleDateString(), gender: sex };
-        
-        // Timeout to ensure canvas is visible before drawing
-        setTimeout(() => renderGauge(bmi, c), 100);
-        nav('result');
+        setTimeout(() => renderGauge(bmi, c), 100); nav('result');
     }
-
     function renderGauge(v, col) {
-        const ctx = document.getElementById('gChart').getContext('2d');
-        if(gc) gc.destroy();
-        gc = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                datasets: [{
-                    data: [v, 45-v > 0 ? 45-v : 0],
-                    backgroundColor: [col, 'rgba(255,255,255,0.05)'],
-                    borderWidth: 0,
-                    cutout: '80%',
-                    circumference: 180,
-                    rotation: 270
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false }, tooltip: { enabled: false } }
-            }
-        });
+        const ctx = document.getElementById('gChart').getContext('2d'); if(gc) gc.destroy();
+        gc = new Chart(ctx, { type: 'doughnut', data: { datasets: [{ data: [v, 45-v > 0 ? 45-v : 0], backgroundColor: [col, 'rgba(255,255,255,0.05)'], borderWidth: 0, cutout: '80%', circumference: 180, rotation: 270 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
     }
-
     function save() {
-        let db = JSON.parse(localStorage.getItem('bionex_db') || '[]');
-        db.unshift(window.currentData);
-        localStorage.setItem('bionex_db', JSON.stringify(db));
-        alert("Clinical Record Archived! ✅");
-        nav('history');
-        updateDash();
+        let db = JSON.parse(localStorage.getItem('bionex_db') || '[]'); db.unshift(window.currentData);
+        localStorage.setItem('bionex_db', JSON.stringify(db)); alert("Record Archived! ✅"); nav('history'); updateDash();
     }
-
     function loadHistory() {
         let db = JSON.parse(localStorage.getItem('bionex_db') || '[]');
-        document.getElementById('h-list').innerHTML = db.map(l => `
-            <div class="card" style="padding:18px; display:flex; justify-content:space-between; align-items:center;">
-                <div style="display:flex; gap:12px; align-items:center;">
-                    <div style="background:rgba(255,255,255,0.05); width:45px; height:45px; border-radius:15px; display:flex; align-items:center; justify-content:center;">${l.gender === 'Male' ? '👨' : '👩'}</div>
-                    <div>
-                        <div style="font-weight:700; font-size:0.9rem;">${l.name}</div>
-                        <div style="font-size:0.7rem; color:var(--text-dim);">${l.date}</div>
-                    </div>
-                </div>
-                <div style="font-weight:800; color:${l.c}">${l.bmi}</div>
-            </div>
-        `).join('') || '<p style="text-align:center;">Empty.</p>';
-        
-        if(db.length > 0) {
-            setTimeout(() => renderTrend(db), 100);
-        }
+        document.getElementById('h-list').innerHTML = db.map(l => `<div class="card" style="padding:18px; display:flex; justify-content:space-between; align-items:center;"><div style="display:flex; gap:12px; align-items:center;"><div style="background:rgba(255,255,255,0.05); width:45px; height:45px; border-radius:15px; display:flex; align-items:center; justify-content:center;">${l.gender==='Male'?'👨':'👩'}</div><div><div style="font-weight:700; font-size:0.9rem;">${l.name}</div><div style="font-size:0.7rem; color:var(--text-dim);">${l.date}</div></div></div><div style="font-weight:800; color:${l.c}">${l.bmi}</div></div>`).join('') || '<p style="text-align:center;">Empty.</p>';
+        if(db.length > 0) setTimeout(() => renderTrend(db), 100);
     }
-
     function renderTrend(db) {
-        const ctx = document.getElementById('tChart').getContext('2d');
-        if(tc) tc.destroy();
-        const dataReversed = [...db].reverse().slice(-7); // Last 7 records
-        tc = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: dataReversed.map(i => i.name.split(' ')[0]),
-                datasets: [{
-                    label: 'BMI Trend',
-                    data: dataReversed.map(i => i.bmi),
-                    borderColor: '#00e5ff',
-                    backgroundColor: 'rgba(0, 229, 255, 0.1)',
-                    fill: true,
-                    tension: 0.4,
-                    borderWidth: 3,
-                    pointRadius: 4,
-                    pointBackgroundColor: '#fff'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } },
-                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } } }
-                }
-            }
-        });
+        const ctx = document.getElementById('tChart').getContext('2d'); if(tc) tc.destroy();
+        const d = [...db].reverse().slice(-7);
+        tc = new Chart(ctx, { type: 'line', data: { labels: d.map(i => i.name.split(' ')[0]), datasets: [{ data: d.map(i => i.bmi), borderColor: '#00e5ff', backgroundColor: 'rgba(0, 229, 255, 0.1)', fill: true, tension: 0.4, borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#fff' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: '#94a3b8' } }, y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } } } } });
     }
-
-    function updateDash() {
-        let db = JSON.parse(localStorage.getItem('bionex_db') || '[]');
-        document.getElementById('log-stat').innerText = db.length;
-    }
-
+    function updateDash() { let db = JSON.parse(localStorage.getItem('bionex_db') || '[]'); document.getElementById('log-stat').innerText = db.length; }
     window.onload = updateDash;
 </script>
 </body>
