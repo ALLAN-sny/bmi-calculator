@@ -10,468 +10,279 @@
 
     <style>
         :root {
-            --primary: #00f2fe;
-            --secondary: #4facfe;
-            --bg: #050a18;
-            --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.12);
-            --neon-glow: 0 0 20px rgba(0, 242, 254, 0.4);
+            --primary: #00f2fe; --secondary: #4facfe; --bg: #030712;
+            --glass: rgba(255, 255, 255, 0.03); --glass-border: rgba(255, 255, 255, 0.1);
         }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg);
-            color: #ffffff; margin: 0; min-height: 100vh; overflow-x: hidden; display: flex; flex-direction: column;
+            color: #ffffff; margin: 0; min-height: 100vh; overflow-x: hidden;
         }
 
-        /* Splash Screen */
-        #splash {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            z-index: 9999; transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .loader {
-            width: 40px; height: 40px; border: 3px solid var(--glass); border-top: 3px solid var(--primary);
-            border-radius: 50%; animation: spin 1s linear infinite; margin-top: 20px;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* Animated Blobs */
-        .blob {
-            position: fixed; width: 300px; height: 300px; filter: blur(80px); border-radius: 50%; z-index: -1; opacity: 0.15; animation: move 20s infinite alternate;
-        }
-        .blob-1 { background: linear-gradient(135deg, var(--primary), var(--secondary)); top: -100px; left: -100px; }
+        /* --- UI DECORATIONS --- */
+        .blob { position: fixed; width: 400px; height: 400px; filter: blur(100px); border-radius: 50%; z-index: -1; opacity: 0.12; }
+        .blob-1 { background: var(--primary); top: -100px; left: -100px; }
         .blob-2 { background: #7000ff; bottom: -100px; right: -100px; }
-        @keyframes move { from { transform: translate(0, 0) scale(1); } to { transform: translate(50px, 100px) scale(1.2); } }
 
-        .container { max-width: 480px; margin: 0 auto; padding: 20px; padding-bottom: 120px; width: 100%; box-sizing: border-box; }
-        .page { display: none; animation: fadeIn 0.4s ease-out; }
-        .active { display: block; }
+        .container { max-width: 480px; margin: 0 auto; padding: 20px; padding-bottom: 110px; }
+        
+        /* Drawer */
+        #drawer {
+            position: fixed; top: 0; left: -280px; width: 280px; height: 100%;
+            background: rgba(3, 7, 18, 0.98); backdrop-filter: blur(20px);
+            z-index: 2000; transition: 0.4s; border-right: 1px solid var(--glass-border); padding: 30px 20px;
+        }
+        #drawer.open { left: 0; }
+        .drawer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1999; display: none; }
+
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding: 10px 0; }
+        .card { background: var(--glass); backdrop-filter: blur(20px); border-radius: 28px; padding: 20px; margin-bottom: 20px; border: 1px solid var(--glass-border); position: relative; }
+
+        /* Gender Cards */
+        .gender-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0; }
+        .g-card {
+            background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border);
+            border-radius: 20px; padding: 20px; text-align: center; cursor: pointer; transition: 0.3s;
+        }
+        .g-card i { font-size: 2.2rem; margin-bottom: 8px; display: block; }
+        .active-m { border-color: #4facfe; color: #4facfe; background: rgba(79, 172, 254, 0.1); }
+        .active-f { border-color: #f093fb; color: #f093fb; background: rgba(240, 147, 251, 0.1); }
+
+        /* Form Inputs */
+        .input-box { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 15px; padding: 16px; width: 100%; color: white; box-sizing: border-box; margin-top: 5px; }
+
+        .btn-action {
+            background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #030712;
+            border: none; padding: 18px; border-radius: 20px; width: 100%; font-weight: 800; cursor: pointer;
+            display: flex; justify-content: center; align-items: center; gap: 12px;
+        }
+
+        nav {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 85%;
+            background: rgba(17, 24, 39, 0.9); backdrop-filter: blur(20px); border: 1px solid var(--glass-border);
+            display: flex; justify-content: space-around; padding: 12px; border-radius: 24px; z-index: 1000;
+        }
+        nav div { color: #6b7280; font-size: 0.65rem; text-align: center; cursor: pointer; }
+        nav div.active { color: var(--primary); }
+        nav i { font-size: 1.4rem; display: block; margin-bottom: 4px; }
+
+        .page { display: none; animation: fadeIn 0.4s ease; }
+        .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Top Header */
-        .app-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-top: 10px; }
-        .user-profile { display: flex; align-items: center; gap: 12px; }
-        .avatar { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--primary); padding: 2px; }
-
-        /* Glass Cards */
-        .card { 
-            background: var(--glass); backdrop-filter: blur(20px); border-radius: 28px; 
-            padding: 22px; margin-bottom: 20px; border: 1px solid var(--glass-border); position: relative; overflow: hidden;
-        }
-
-        /* Gender Selection */
-        .gender-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; margin-bottom: 15px;}
-        .gender-btn {
-            background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 20px; padding: 15px;
-            text-align: center; cursor: pointer; transition: 0.3s; color: #94a3b8;
-        }
-        .gender-btn i { font-size: 2rem; margin-bottom: 8px; display: block; }
-        .active-male { background: rgba(79, 172, 254, 0.15); border-color: var(--secondary); color: var(--secondary); transform: translateY(-3px); box-shadow: var(--neon-glow); }
-        .active-female { background: rgba(240, 147, 251, 0.15); border-color: #f093fb; color: #f093fb; transform: translateY(-3px); box-shadow: 0 0 20px rgba(240, 147, 251, 0.2); }
-
-        /* Inputs */
-        .input-label { font-size: 0.7rem; color: #94a3b8; font-weight: 800; letter-spacing: 1px; display: block; margin-bottom: 5px; text-transform: uppercase;}
-        .input-box { 
-            background: rgba(255, 255, 255, 0.04); border: 1px solid var(--glass-border); border-radius: 15px; 
-            padding: 15px; width: 100%; color: white; font-size: 1rem; box-sizing: border-box; transition: 0.3s;
-        }
-        .input-box:focus { border-color: var(--primary); outline: none; background: rgba(255, 255, 255, 0.08); }
-        .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
-
-        /* Buttons */
-        .btn-pro {
-            background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #050a18; border: none; 
-            padding: 18px; border-radius: 18px; width: 100%; font-weight: 800; font-size: 1rem; cursor: pointer; 
-            transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px;
-        }
-        .btn-pro:active { transform: scale(0.96); }
-
-        /* Data Grid for Results */
-        .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
-        .data-box { background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); padding: 15px; border-radius: 18px; text-align: center; }
-        .data-box i { font-size: 1.2rem; margin-bottom: 5px; color: var(--primary); }
-        .data-value { font-size: 1.1rem; font-weight: 800; color: white; margin-top: 5px; }
-        
-        /* Chart Containers */
-        .chart-container { position: relative; height: 180px; width: 100%; margin: 0 auto; display: flex; justify-content: center; }
-
-        /* Nav */
-        nav {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; 
-            background: rgba(5, 10, 24, 0.95); backdrop-filter: blur(25px); border: 1px solid var(--glass-border);
-            display: flex; justify-content: space-around; padding: 12px; border-radius: 25px; z-index: 1000;
-        }
-        nav div { color: #64748b; font-size: 0.65rem; text-align: center; cursor: pointer; transition: 0.3s; font-weight: 600; }
-        nav div.nav-active { color: var(--primary); transform: translateY(-4px); }
-        nav i { font-size: 1.4rem; display: block; margin-bottom: 5px; }
-
+        .chart-box { height: 180px; width: 100%; margin: 20px 0; }
     </style>
 </head>
 <body>
 
-    <div id="splash">
-        <i class="fas fa-heartbeat" style="font-size: 3.5rem; color: var(--primary); margin-bottom: 15px;"></i>
-        <h1 style="letter-spacing: 5px; font-weight: 800; margin: 0;">BIONEX<span style="color:var(--primary)">360</span></h1>
-        <p style="font-size: 0.75rem; color: #94a3b8; letter-spacing: 3px; text-transform: uppercase;">Clinical Intelligence</p>
-        <div class="loader"></div>
-        <div style="position: absolute; bottom: 30px; font-size: 0.65rem; color: #64748b; text-align: center; letter-spacing: 1px;">
-            POWERED BY<br><strong style="color: white; font-size: 0.8rem;">ENG. ALLAN</strong>
+    <div class="drawer-overlay" id="overlay" onclick="toggleMenu()"></div>
+    <div id="drawer">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <i class="fas fa-user-circle" style="font-size: 4rem; color: var(--primary);"></i>
+            <h3 style="margin:10px 0 0;">Eng. Allan</h3>
+            <span style="font-size: 0.7rem; color: var(--primary);">CHIEF BIO-DEVELOPER</span>
         </div>
+        <div style="padding: 15px; border-bottom: 1px solid var(--glass-border);"><i class="fas fa-database"></i> Local Database</div>
+        <div style="padding: 15px; border-bottom: 1px solid var(--glass-border);"><i class="fas fa-file-export"></i> Export PDF</div>
+        <div style="padding: 15px; border-bottom: 1px solid var(--glass-border);"><i class="fas fa-cog"></i> Settings</div>
     </div>
 
     <div class="blob blob-1"></div>
     <div class="blob blob-2"></div>
 
     <div class="container">
-        <header class="app-header">
-            <div class="user-profile">
-                <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" class="avatar" alt="User">
-                <div>
-                    <span style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px;">Clinical Dashboard</span>
-                    <strong style="color: white; display: block; font-size: 1.2rem; letter-spacing: -0.5px;">Bionex System</strong>
-                </div>
-            </div>
-            <div style="background: var(--glass); width: 42px; height: 42px; display: flex; justify-content: center; align-items: center; border-radius: 14px; border: 1px solid var(--glass-border);">
-                <i class="fas fa-fingerprint" style="color: var(--primary); font-size: 1.2rem;"></i>
-            </div>
+        <header class="header">
+            <i class="fas fa-bars" onclick="toggleMenu()" style="cursor:pointer; font-size: 1.4rem;"></i>
+            <div style="font-weight: 800; letter-spacing: 2px;">BIONEX<span style="color:var(--primary)">360</span></div>
+            <i class="fas fa-ellipsis-v" style="cursor:pointer;"></i>
         </header>
 
         <div id="home" class="page active">
-            
-            <div class="card" style="background: linear-gradient(135deg, rgba(0,242,254,0.08), rgba(79,172,254,0.05)); border: 1px solid rgba(0,242,254,0.2);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <h4 style="margin:0; color: var(--primary); font-size: 0.75rem; letter-spacing: 1px;"><i class="fas fa-satellite-dish"></i> SYSTEM LINK</h4>
-                    <span style="background: rgba(46, 204, 113, 0.2); color: #2ecc71; font-size: 0.6rem; padding: 4px 10px; border-radius: 12px; font-weight: 800;">ONLINE</span>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
-                    <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 15px;">
-                        <i class="fas fa-users" style="color: #94a3b8; font-size: 0.9rem;"></i>
-                        <div style="font-size: 1.2rem; font-weight: 800; margin-top: 5px;" id="totalPatients">0</div>
-                        <div style="font-size: 0.6rem; color: #64748b; text-transform: uppercase;">Patients</div>
+            <div class="card" style="background: linear-gradient(135deg, rgba(0,242,254,0.1), transparent);">
+                <h4 style="margin: 0; color: var(--primary);">ENGINEERING DASHBOARD</h4>
+                <p style="font-size: 0.8rem; color: #94a3b8;">Hello Welcome Eng. Allan. System operational.</p>
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <div style="flex: 1; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 15px; text-align: center;">
+                        <span style="display: block; font-size: 1.2rem; font-weight: 800;" id="total">0</span>
+                        <span style="font-size: 0.6rem; color: #64748b;">RECORDS</span>
                     </div>
-                    <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 15px;">
-                        <i class="fas fa-server" style="color: #94a3b8; font-size: 0.9rem;"></i>
-                        <div style="font-size: 1.2rem; font-weight: 800; margin-top: 5px; color: var(--primary);">Secure</div>
-                        <div style="font-size: 0.6rem; color: #64748b; text-transform: uppercase;">Database</div>
+                    <div style="flex: 1; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 15px; text-align: center;">
+                        <span style="display: block; font-size: 1.2rem; font-weight: 800; color: #2ecc71;">ONLINE</span>
+                        <span style="font-size: 0.6rem; color: #64748b;">SYNC</span>
                     </div>
                 </div>
             </div>
-
-            <div class="card" style="background: linear-gradient(135deg, rgba(5,10,24,0.9), rgba(0,242,254,0.1)); border-left: 4px solid var(--primary);">
-                <i class="fas fa-dna" style="position: absolute; right: -20px; top: -10px; font-size: 130px; color: var(--primary); opacity: 0.04; transform: rotate(45deg);"></i>
-                <div style="font-size: 0.6rem; background: var(--primary); color: #000; padding: 4px 10px; border-radius: 12px; font-weight: 800; letter-spacing: 1px; display: inline-block; margin-bottom: 10px;"><i class="fas fa-code"></i> DEVELOPER & FOUNDER</div>
-                <h2 style="margin: 0; font-weight: 800; font-size: 1.6rem;">Eng. Allan</h2>
-                <div style="color: var(--primary); font-size: 0.85rem; font-weight: 600; margin-top: 2px;">Biomedical Engineer, MUHAS</div>
-                
-                <p style="font-size: 0.8rem; color: #cbd5e1; font-style: italic; margin-top: 15px; line-height: 1.6; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px;">
-                    "Bridging the gap between modern technology and clinical precision to elevate global healthcare standards."
-                </p>
+            <div class="card" style="border-left: 4px solid var(--primary); font-style: italic; font-size: 0.85rem; color: #cbd5e1;">
+                "Technology is the bridge between clinical needs and patient care."
             </div>
-            
-            <button class="btn-pro" onclick="showPage('calc')" style="margin-top: 10px;"><i class="fas fa-play"></i> START DIAGNOSTIC</button>
+            <button class="btn-action" onclick="showP('calc')"><i class="fas fa-plus-circle"></i> NEW ANALYSIS</button>
         </div>
 
         <div id="calc" class="page">
             <div class="card">
-                <h3 style="margin-top:0; border-bottom: 1px solid var(--glass-border); padding-bottom: 15px;"><i class="fas fa-microscope" style="color: var(--primary);"></i> Patient Metrics</h3>
-                
-                <label class="input-label">BIOLOGICAL GENDER</label>
+                <h3 style="margin-top:0;"><i class="fas fa-notes-medical" style="color:var(--primary)"></i> Patient Entry</h3>
                 <div class="gender-grid">
-                    <div class="gender-btn active-male" id="btn-male" onclick="setGender('male')">
-                        <i class="fas fa-mars"></i>
-                        <span style="font-size: 0.8rem; font-weight: 800;">MALE</span>
-                    </div>
-                    <div class="gender-btn" id="btn-female" onclick="setGender('female')">
-                        <i class="fas fa-venus"></i>
-                        <span style="font-size: 0.8rem; font-weight: 800;">FEMALE</span>
-                    </div>
+                    <div class="g-card active-m" id="m" onclick="setG('male')"><i class="fas fa-mars"></i>MALE</div>
+                    <div class="g-card" id="f" onclick="setG('female')"><i class="fas fa-venus"></i>FEMALE</div>
                 </div>
-
-                <div style="margin-bottom: 15px;">
-                    <label class="input-label">PATIENT NAME</label>
-                    <input id="name" class="input-box" placeholder="Full name">
+                <input id="name" class="input-box" placeholder="Patient Name" style="margin-bottom: 15px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <input id="w" type="number" class="input-box" placeholder="Weight (kg)">
+                    <input id="h" type="number" step="0.01" class="input-box" placeholder="Height (m)">
                 </div>
-
-                <div class="input-row">
-                    <div>
-                        <label class="input-label">AGE (YEARS)</label>
-                        <input id="age" type="number" class="input-box" placeholder="e.g. 24">
-                    </div>
-                    <div>
-                        <label class="input-label">WEIGHT (KG)</label>
-                        <input id="weight" type="number" class="input-box" placeholder="e.g. 70">
-                    </div>
-                </div>
-
-                <div style="margin-bottom: 10px;">
-                    <label class="input-label">HEIGHT (METERS)</label>
-                    <input id="height" type="number" step="0.01" class="input-box" placeholder="e.g. 1.75">
-                </div>
-
-                <button class="btn-pro" style="margin-top: 25px;" onclick="calculatePro()">
-                    <i class="fas fa-cogs"></i> PROCESS ALGORITHM
-                </button>
+                <button class="btn-action" style="margin-top: 25px;" onclick="run()">ANALYZE DATA</button>
             </div>
         </div>
 
         <div id="result" class="page">
-            <div class="card">
-                <div style="text-align: center;">
-                    <span style="font-size: 0.7rem; color: #94a3b8; letter-spacing: 2px; text-transform: uppercase;">Body Mass Index</span>
-                    <div class="chart-container">
-                        <canvas id="bmiChart"></canvas>
-                        <div style="position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
-                            <div id="resBMI" style="font-size: 3.2rem; font-weight: 800; color: white; line-height: 1;">00.0</div>
-                            <div id="resStatus" style="font-size: 0.8rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-top: 5px;">Status</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="data-grid">
-                    <div class="data-box">
-                        <i class="fas fa-fire-alt"></i>
-                        <div style="font-size: 0.65rem; color: #94a3b8; text-transform: uppercase;">Basal Metabolic Rate</div>
-                        <div class="data-value" id="resBMR">0 kcal</div>
-                    </div>
-                    <div class="data-box">
-                        <i class="fas fa-weight"></i>
-                        <div style="font-size: 0.65rem; color: #94a3b8; text-transform: uppercase;">Ideal Weight</div>
-                        <div class="data-value" id="resIdeal">0 kg</div>
-                    </div>
-                </div>
+            <div class="card" style="text-align: center;">
+                <div id="resVal" style="font-size: 3.5rem; font-weight: 800;">00.0</div>
+                <div id="resStat" style="font-weight: 800; letter-spacing: 2px;">NORMAL</div>
                 
-                <div style="background: rgba(0,0,0,0.2); border-radius: 18px; padding: 18px; margin-top: 20px; border-left: 3px solid var(--primary);">
-                    <div style="font-size: 0.75rem; color: var(--primary); font-weight: 800; margin-bottom: 8px; letter-spacing: 1px;"><i class="fas fa-comment-medical"></i> CLINICAL INSIGHT</div>
-                    <p id="resAdvice" style="color: #cbd5e1; font-size: 0.85rem; margin: 0; line-height: 1.6;"></p>
+                <div class="chart-box">
+                    <canvas id="gaugeChart"></canvas>
                 </div>
 
-                <button class="btn-pro" onclick="saveToArchive()" style="margin-top: 25px;">
-                    <i class="fas fa-cloud-upload-alt"></i> ARCHIVE RECORD
-                </button>
+                <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 15px; text-align: left; border-left: 4px solid var(--primary);">
+                    <div style="font-weight: 800; font-size: 0.8rem; margin-bottom: 5px;">CLINICAL ADVICE:</div>
+                    <p id="advice" style="font-size: 0.8rem; color: #94a3b8; margin: 0;"></p>
+                </div>
+                <button class="btn-action" style="margin-top: 25px;" onclick="save()">SAVE TO ARCHIVE</button>
             </div>
         </div>
 
-        <div id="history" class="page">
-            <div class="card">
-                <h3 style="margin-top:0; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px;"><i class="fas fa-chart-line" style="color: var(--primary);"></i> Clinical Trends</h3>
-                <div style="height: 200px; width: 100%;">
+        <div id="db" class="page">
+            <div class="card" style="padding: 15px;">
+                <h4 style="margin-top:0;"><i class="fas fa-chart-line"></i> Patient Trend Graph</h4>
+                <div style="height: 150px;">
                     <canvas id="trendChart"></canvas>
                 </div>
             </div>
-
-            <h4 style="margin-bottom: 15px; color: #94a3b8; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">Patient Database</h4>
-            <div id="archiveList"></div>
+            <div id="list"></div>
         </div>
     </div>
 
     <nav>
-        <div onclick="showPage('home')" id="n-home" class="nav-active"><i class="fas fa-layer-group"></i>Dashboard</div>
-        <div onclick="showPage('calc')" id="n-calc"><i class="fas fa-heartbeat"></i>Diagnostic</div>
-        <div onclick="showPage('history')" id="n-history"><i class="fas fa-server"></i>Database</div>
+        <div onclick="showP('home')" id="n-home" class="active"><i class="fas fa-th-large"></i>Home</div>
+        <div onclick="showP('calc')" id="n-calc"><i class="fas fa-stethoscope"></i>Test</div>
+        <div onclick="showP('db')" id="n-db"><i class="fas fa-database"></i>History</div>
     </nav>
 
 <script>
-    // Splash Screen
-    setTimeout(() => {
-        document.getElementById('splash').style.opacity = '0';
-        setTimeout(() => document.getElementById('splash').style.display = 'none', 800);
-        updatePatientCount();
-    }, 2500);
+    let gender = 'male', gChart, tChart;
 
-    let selectedGender = 'male';
-    let resultChartInstance = null;
-    let historyChartInstance = null;
-
-    function setGender(g) {
-        selectedGender = g;
-        document.getElementById('btn-male').classList.toggle('active-male', g === 'male');
-        document.getElementById('btn-female').classList.toggle('active-female', g === 'female');
-        if (window.navigator.vibrate) window.navigator.vibrate(20);
+    function toggleMenu() {
+        document.getElementById('drawer').classList.toggle('open');
+        const o = document.getElementById('overlay');
+        o.style.display = o.style.display === 'block' ? 'none' : 'block';
     }
 
-    function showPage(id) {
+    function setG(g) {
+        gender = g;
+        document.getElementById('m').classList.toggle('active-m', g==='male');
+        document.getElementById('f').classList.toggle('active-f', g==='female');
+    }
+
+    function showP(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        document.querySelectorAll('nav div').forEach(d => d.classList.remove('nav-active'));
-        const navId = (id === 'result') ? 'n-calc' : 'n-' + id;
-        document.getElementById(navId).classList.add('nav-active');
-        
-        if (window.navigator.vibrate) window.navigator.vibrate(30);
-        if(id === 'history') {
-            loadArchive();
-        }
+        document.querySelectorAll('nav div').forEach(d => d.classList.remove('active'));
+        document.getElementById('n-'+ (id==='result'?'calc':id)).classList.add('active');
+        if(id === 'db') loadHistory();
     }
 
-    function calculatePro() {
-        const name = document.getElementById('name').value;
-        const age = parseInt(document.getElementById('age').value);
-        const w = parseFloat(document.getElementById('weight').value);
-        const h = parseFloat(document.getElementById('height').value);
-        
-        if(!h || !w || !name || !age) {
-            alert("SYSTEM ERROR: Please input Name, Age, Weight, and Height.");
-            return;
-        }
-        
-        // 1. Calculate BMI
-        const bmi = (w / (h * h)).toFixed(1);
-        
-        // 2. Calculate Ideal Weight (Simple Devine Formula logic approximation for visual)
-        const idealWeight = (22 * (h * h)).toFixed(1);
+    function run() {
+        const n = document.getElementById('name').value;
+        const w = document.getElementById('w').value;
+        const h = document.getElementById('h').value;
+        if(!n || !w || !h) return alert("System error: Missing data");
 
-        // 3. Calculate BMR (Mifflin-St Jeor Equation)
-        const h_cm = h * 100;
-        let bmr = 0;
-        if(selectedGender === 'male') {
-            bmr = (10 * w) + (6.25 * h_cm) - (5 * age) + 5;
-        } else {
-            bmr = (10 * w) + (6.25 * h_cm) - (5 * age) - 161;
-        }
+        const bmi = (w / (h*h)).toFixed(1);
+        let s = "Normal", c = "#2ecc71", a = "Perfect engineering. Maintain diet.";
 
-        let status, advice, color;
+        if(bmi < 18.5) { s="Underweight"; c="#f1c40f"; a="Increase caloric intake."; }
+        else if(bmi > 25) { s="Overweight"; c="#e67e22"; a="More activity needed."; }
 
-        if(bmi < 18.5) { 
-            status = "Underweight"; color = "#f1c40f"; 
-            advice = `Patient requires caloric surplus. BMR is ${bmr.toFixed(0)} kcal/day. Recommend ${Math.round(bmr + 500)} kcal/day for safe weight gain to reach target ${idealWeight}kg.`; 
-        }
-        else if(bmi < 25) { 
-            status = "Optimal"; color = "#2ecc71"; 
-            advice = `Physiology is within perfect engineering tolerances. Maintain current caloric intake of approx ${Math.round(bmr * 1.2)} kcal/day (with moderate activity).`; 
-        }
-        else if(bmi < 30) { 
-            status = "Overweight"; color = "#e67e22"; 
-            advice = `Metabolic strain detected. Patient is above ideal mass (${idealWeight}kg). Recommend slight caloric deficit and cardiovascular routine.`; 
-        }
-        else { 
-            status = "Obese"; color = "#e74c3c"; 
-            advice = `CRITICAL: High cardiovascular risk. Strict lifestyle intervention required. Ideal biological weight for this height is ${idealWeight}kg.`; 
-        }
+        document.getElementById('resVal').innerText = bmi;
+        document.getElementById('resVal').style.color = c;
+        document.getElementById('resStat').innerText = s;
+        document.getElementById('resStat').style.color = c;
+        document.getElementById('advice').innerText = a;
 
-        document.getElementById('resBMI').innerText = bmi;
-        document.getElementById('resStatus').innerText = status;
-        document.getElementById('resStatus').style.color = color;
-        document.getElementById('resBMR').innerText = bmr.toFixed(0) + " kcal";
-        document.getElementById('resIdeal').innerText = idealWeight + " kg";
-        document.getElementById('resAdvice').innerText = advice;
-        
-        // Render Result Chart
-        renderDoughnut(bmi, color);
-
-        // Prepare data for saving
-        window.currentData = { 
-            name, age, gender: selectedGender, bmi: parseFloat(bmi), 
-            status, color, date: new Date().toLocaleDateString('en-GB') 
-        };
-        
-        showPage('result');
+        renderGauge(bmi, c);
+        window.currentRecord = { n, bmi, s, c, gender, d: new Date().toLocaleDateString() };
+        showP('result');
     }
 
-    function renderDoughnut(bmiValue, color) {
-        const ctx = document.getElementById('bmiChart').getContext('2d');
-        if(resultChartInstance) resultChartInstance.destroy();
-        
-        // Cap max value for visual symmetry
-        let chartMax = 40; 
-        let remaining = chartMax - bmiValue;
-        if(remaining < 0) remaining = 0;
-
-        resultChartInstance = new Chart(ctx, {
+    function renderGauge(val, col) {
+        const ctx = document.getElementById('gaugeChart').getContext('2d');
+        if(gChart) gChart.destroy();
+        gChart = new Chart(ctx, {
             type: 'doughnut',
             data: {
-                labels: ['BMI Score', 'Buffer'],
                 datasets: [{
-                    data: [bmiValue, remaining],
-                    backgroundColor: [color, 'rgba(255,255,255,0.05)'],
+                    data: [val, 40-val],
+                    backgroundColor: [col, 'rgba(255,255,255,0.05)'],
                     borderWidth: 0,
-                    cutout: '82%',
+                    cutout: '85%',
                     circumference: 180,
                     rotation: 270
                 }]
             },
-            options: {
-                plugins: { legend: { display: false }, tooltip: { enabled: false } },
-                responsive: true, maintainAspectRatio: false
-            }
+            options: { plugins: { legend: { display: false } } }
         });
     }
 
-    function saveToArchive() {
-        let logs = JSON.parse(localStorage.getItem('bionex_ai_db') || '[]');
-        logs.unshift(window.currentData);
-        localStorage.setItem('bionex_ai_db', JSON.stringify(logs));
-        
-        alert("Encrypted & Archived successfully.");
-        updatePatientCount();
-        
-        // Reset Inputs
-        document.getElementById('name').value = '';
-        document.getElementById('age').value = '';
-        document.getElementById('weight').value = '';
-        document.getElementById('height').value = '';
-        
-        showPage('history');
+    function save() {
+        let db = JSON.parse(localStorage.getItem('bionex_final_v3') || '[]');
+        db.unshift(window.currentRecord);
+        localStorage.setItem('bionex_final_v3', JSON.stringify(db));
+        alert("Encrypted & Saved.");
+        showP('db');
+        updateHome();
     }
 
-    function updatePatientCount() {
-        let logs = JSON.parse(localStorage.getItem('bionex_ai_db') || '[]');
-        document.getElementById('totalPatients').innerText = logs.length;
-    }
-
-    function loadArchive() {
-        const logs = JSON.parse(localStorage.getItem('bionex_ai_db') || '[]');
-        
-        // Render List
-        document.getElementById('archiveList').innerHTML = logs.map(l => `
+    function loadHistory() {
+        let db = JSON.parse(localStorage.getItem('bionex_final_v3') || '[]');
+        document.getElementById('list').innerHTML = db.map(l => `
             <div class="card" style="display:flex; justify-content:space-between; align-items:center; padding: 15px;">
-                <div style="display: flex; gap: 15px; align-items: center;">
-                    <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 50%; width: 25px; height: 25px; display: flex; justify-content: center; align-items: center;">
-                        <i class="fas ${l.gender === 'male' ? 'fa-mars' : 'fa-venus'}" style="color: ${l.gender === 'male' ? 'var(--secondary)' : '#f093fb'};"></i>
-                    </div>
-                    <div>
-                        <div style="font-weight:800; font-size: 0.95rem;">${l.name}</div>
-                        <div style="font-size:0.7rem; color:#94a3b8;">${l.date} | Age: ${l.age}</div>
-                    </div>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <i class="fas ${l.gender==='male'?'fa-mars':'fa-venus'}" style="color:${l.gender==='male'?'#4facfe':'#f093fb'}"></i>
+                    <div><b>${l.n}</b><br><small style="color:#64748b">${l.d}</small></div>
                 </div>
-                <div style="text-align:right">
-                    <div style="color:${l.color}; font-weight:800; font-size: 1.2rem;">${l.bmi}</div>
-                    <div style="font-size:0.6rem; background: rgba(255,255,255,0.1); padding: 3px 6px; border-radius: 8px; margin-top: 4px;">${l.status}</div>
-                </div>
+                <div style="text-align:right"><b style="color:${l.c}">${l.bmi}</b><br><small>${l.s}</small></div>
             </div>
-        `).join('') || '<div style="text-align:center; padding: 30px 0; color: #64748b;"><i class="fas fa-database" style="font-size: 2rem; margin-bottom: 10px; opacity: 0.5;"></i><br>Database is empty.</div>';
+        `).join('');
 
-        // Render Trend Graph (Reversing data so oldest is on the left, newest on right)
-        if(logs.length > 0) {
-            const chartData = [...logs].reverse().slice(-10); // Show last 10 entries
-            const ctxTrend = document.getElementById('trendChart').getContext('2d');
-            if(historyChartInstance) historyChartInstance.destroy();
-            
-            historyChartInstance = new Chart(ctxTrend, {
-                type: 'line',
-                data: {
-                    labels: chartData.map(l => l.name.substring(0,5)), // Shorten names for X axis
-                    datasets: [{
-                        label: 'BMI',
-                        data: chartData.map(l => l.bmi),
-                        borderColor: '#00f2fe',
-                        backgroundColor: 'rgba(0, 242, 254, 0.1)',
-                        borderWidth: 2,
-                        fill: true,
-                        tension: 0.4,
-                        pointBackgroundColor: chartData.map(l => l.color),
-                        pointRadius: 5
-                    }]
-                },
-                options: {
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { grid: { display: false }, ticks: { color: '#64748b', font: {size: 10} } },
-                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b' } }
-                    },
-                    responsive: true, maintainAspectRatio: false
-                }
-            });
-        }
+        if(db.length > 0) renderTrend(db);
     }
+
+    function renderTrend(db) {
+        const ctx = document.getElementById('trendChart').getContext('2d');
+        if(tChart) tChart.destroy();
+        const data = [...db].reverse();
+        tChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.map(i => i.n.split(' ')[0]),
+                datasets: [{
+                    data: data.map(i => i.bmi),
+                    borderColor: '#00f2fe',
+                    backgroundColor: 'rgba(0, 242, 254, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: { plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { ticks: { color: '#64748b', font: { size: 10 } } } } }
+        });
+    }
+
+    function updateHome() {
+        let db = JSON.parse(localStorage.getItem('bionex_final_v3') || '[]');
+        document.getElementById('total').innerText = db.length;
+    }
+
+    window.onload = updateHome;
 </script>
 </body>
 </html>
