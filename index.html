@@ -3,215 +3,237 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bionex 360 | Clinical Intelligence</title>
+    <title>Bionex 360 Elite | Biomedical AI</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --primary: #00f2fe; --secondary: #4facfe; --bg: #030712;
-            --glass: rgba(255, 255, 255, 0.03); --glass-border: rgba(255, 255, 255, 0.1);
+            --primary: #00f2fe; --accent: #7000ff; --bg: #020617;
+            --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1);
         }
 
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
             font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg);
             color: #ffffff; margin: 0; min-height: 100vh; overflow-x: hidden;
         }
 
-        /* --- UI DECORATIONS --- */
-        .blob { position: fixed; width: 400px; height: 400px; filter: blur(100px); border-radius: 50%; z-index: -1; opacity: 0.12; }
-        .blob-1 { background: var(--primary); top: -100px; left: -100px; }
-        .blob-2 { background: #7000ff; bottom: -100px; right: -100px; }
+        /* Ambient Background */
+        .glow { position: fixed; width: 400px; height: 400px; border-radius: 50%; filter: blur(120px); opacity: 0.2; z-index: -1; animation: move 10s infinite alternate; }
+        @keyframes move { from { transform: translate(-10%, -10%); } to { transform: translate(10%, 10%); } }
 
-        .container { max-width: 480px; margin: 0 auto; padding: 20px; padding-bottom: 110px; }
-        
-        /* Drawer */
-        #drawer {
-            position: fixed; top: 0; left: -280px; width: 280px; height: 100%;
-            background: rgba(3, 7, 18, 0.98); backdrop-filter: blur(20px);
-            z-index: 2000; transition: 0.4s; border-right: 1px solid var(--glass-border); padding: 30px 20px;
+        .container { width: 100%; max-width: 430px; margin: 0 auto; padding: 25px; padding-bottom: 110px; }
+
+        /* Navigation */
+        .nav-bar {
+            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
+            width: 320px; height: 70px; background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(25px); border-radius: 35px; border: 1px solid var(--border);
+            display: flex; justify-content: space-around; align-items: center; z-index: 1000;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
         }
-        #drawer.open { left: 0; }
-        .drawer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1999; display: none; }
+        .nav-item { color: #475569; font-size: 1.3rem; cursor: pointer; transition: 0.3s; padding: 10px; }
+        .nav-item.active { color: var(--primary); transform: translateY(-5px); text-shadow: 0 0 15px var(--primary); }
 
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding: 10px 0; }
-        .card { background: var(--glass); backdrop-filter: blur(20px); border-radius: 28px; padding: 20px; margin-bottom: 20px; border: 1px solid var(--glass-border); position: relative; }
-
-        /* Gender Cards */
-        .gender-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0; }
-        .g-card {
-            background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border);
-            border-radius: 20px; padding: 20px; text-align: center; cursor: pointer; transition: 0.3s;
-        }
-        .g-card i { font-size: 2.2rem; margin-bottom: 8px; display: block; }
-        .active-m { border-color: #4facfe; color: #4facfe; background: rgba(79, 172, 254, 0.1); }
-        .active-f { border-color: #f093fb; color: #f093fb; background: rgba(240, 147, 251, 0.1); }
-
-        /* Form Inputs */
-        .input-box { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 15px; padding: 16px; width: 100%; color: white; box-sizing: border-box; margin-top: 5px; }
-
-        .btn-action {
-            background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #030712;
-            border: none; padding: 18px; border-radius: 20px; width: 100%; font-weight: 800; cursor: pointer;
-            display: flex; justify-content: center; align-items: center; gap: 12px;
-        }
-
-        nav {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 85%;
-            background: rgba(17, 24, 39, 0.9); backdrop-filter: blur(20px); border: 1px solid var(--glass-border);
-            display: flex; justify-content: space-around; padding: 12px; border-radius: 24px; z-index: 1000;
-        }
-        nav div { color: #6b7280; font-size: 0.65rem; text-align: center; cursor: pointer; }
-        nav div.active { color: var(--primary); }
-        nav i { font-size: 1.4rem; display: block; margin-bottom: 4px; }
-
-        .page { display: none; animation: fadeIn 0.4s ease; }
+        /* Pages */
+        .page { display: none; animation: fadeIn 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
         .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        .chart-box { height: 180px; width: 100%; margin: 20px 0; }
+        /* Components */
+        .card { background: var(--glass); border: 1px solid var(--border); border-radius: 30px; padding: 25px; margin-bottom: 20px; backdrop-filter: blur(10px); }
+        .btn-prime {
+            width: 100%; padding: 20px; border-radius: 20px; border: none;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: #000; font-weight: 800; font-size: 1rem; cursor: pointer;
+            box-shadow: 0 10px 25px rgba(0,242,254,0.3); transition: 0.3s;
+        }
+        .input-field {
+            width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+            border-radius: 18px; padding: 16px; color: white; margin-top: 8px; outline: none;
+        }
+        .input-field:focus { border-color: var(--primary); }
+
+        /* Splash Page Specific */
+        .hero-text { font-size: 3rem; font-weight: 800; line-height: 1; margin: 20px 0; background: linear-gradient(to right, #fff, #64748b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     </style>
 </head>
 <body>
 
-    <div class="drawer-overlay" id="overlay" onclick="toggleMenu()"></div>
-    <div id="drawer">
-        <div style="text-align: center; margin-bottom: 30px;">
-            <i class="fas fa-user-circle" style="font-size: 4rem; color: var(--primary);"></i>
-            <h3 style="margin:10px 0 0;">Eng. Allan</h3>
-            <span style="font-size: 0.7rem; color: var(--primary);">CHIEF BIO-DEVELOPER</span>
-        </div>
-        <div style="padding: 15px; border-bottom: 1px solid var(--glass-border);"><i class="fas fa-database"></i> Local Database</div>
-        <div style="padding: 15px; border-bottom: 1px solid var(--glass-border);"><i class="fas fa-file-export"></i> Export PDF</div>
-        <div style="padding: 15px; border-bottom: 1px solid var(--glass-border);"><i class="fas fa-cog"></i> Settings</div>
-    </div>
-
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
+    <div class="glow" style="top: -100px; left: -100px; background: var(--primary);"></div>
+    <div class="glow" style="bottom: -100px; right: -100px; background: var(--accent);"></div>
 
     <div class="container">
-        <header class="header">
-            <i class="fas fa-bars" onclick="toggleMenu()" style="cursor:pointer; font-size: 1.4rem;"></i>
-            <div style="font-weight: 800; letter-spacing: 2px;">BIONEX<span style="color:var(--primary)">360</span></div>
-            <i class="fas fa-ellipsis-v" style="cursor:pointer;"></i>
-        </header>
-
-        <div id="home" class="page active">
-            <div class="card" style="background: linear-gradient(135deg, rgba(0,242,254,0.1), transparent);">
-                <h4 style="margin: 0; color: var(--primary);">ENGINEERING DASHBOARD</h4>
-                <p style="font-size: 0.8rem; color: #94a3b8;">Hello Welcome Eng. Allan. System operational.</p>
-                <div style="display: flex; gap: 10px; margin-top: 15px;">
-                    <div style="flex: 1; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 15px; text-align: center;">
-                        <span style="display: block; font-size: 1.2rem; font-weight: 800;" id="total">0</span>
-                        <span style="font-size: 0.6rem; color: #64748b;">RECORDS</span>
-                    </div>
-                    <div style="flex: 1; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 15px; text-align: center;">
-                        <span style="display: block; font-size: 1.2rem; font-weight: 800; color: #2ecc71;">ONLINE</span>
-                        <span style="font-size: 0.6rem; color: #64748b;">SYNC</span>
+        
+        <div id="p-intro" class="page active">
+            <div style="margin-top: 50px;">
+                <div style="width: 60px; height: 5px; background: var(--primary); border-radius: 10px;"></div>
+                <h1 class="hero-text">Bionex<br>Intelligence</h1>
+                <p style="color: #94a3b8; line-height: 1.6; font-size: 1.1rem;">
+                    Revolutionizing biomedical tracking with AI-driven analytics. Precision meet clinical care.
+                </p>
+                <div class="card" style="margin-top: 40px; background: rgba(0,242,254,0.05);">
+                    <div style="display: flex; gap: 15px; align-items: center;">
+                        <i class="fas fa-shield-virus" style="font-size: 2rem; color: var(--primary);"></i>
+                        <span style="font-size: 0.9rem; font-weight: 600;">Secure Bio-Data Encryption Active</span>
                     </div>
                 </div>
+                <button class="btn-prime" style="margin-top: 20px;" onclick="navTo('home')">GET STARTED <i class="fas fa-arrow-right"></i></button>
             </div>
-            <div class="card" style="border-left: 4px solid var(--primary); font-style: italic; font-size: 0.85rem; color: #cbd5e1;">
-                "Technology is the bridge between clinical needs and patient care."
-            </div>
-            <button class="btn-action" onclick="showP('calc')"><i class="fas fa-plus-circle"></i> NEW ANALYSIS</button>
         </div>
 
-        <div id="calc" class="page">
+        <div id="p-home" class="page">
+            <header style="margin-bottom: 30px;">
+                <h2 style="margin: 0; font-weight: 800;">Hello, Welcome</h2>
+                <p style="color: #64748b; font-size: 0.9rem; margin: 5px 0;">Let's check your health status today.</p>
+            </header>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                <div class="card" style="margin:0; text-align: center; border-bottom: 3px solid var(--primary);">
+                    <i class="fas fa-users" style="color: var(--primary); font-size: 1.5rem; margin-bottom: 10px;"></i>
+                    <div id="total-count" style="font-size: 1.5rem; font-weight: 800;">0</div>
+                    <div style="font-size: 0.6rem; color: #64748b;">PATIENTS LOADED</div>
+                </div>
+                <div class="card" style="margin:0; text-align: center; border-bottom: 3px solid var(--accent);">
+                    <i class="fas fa-heartbeat" style="color: #ff0055; font-size: 1.5rem; margin-bottom: 10px;"></i>
+                    <div style="font-size: 1.2rem; font-weight: 800;">LIVE</div>
+                    <div style="font-size: 0.6rem; color: #64748b;">AI MONITORING</div>
+                </div>
+            </div>
+
+            <div class="card" onclick="navTo('calc')" style="cursor: pointer; background: linear-gradient(135deg, rgba(0,242,254,0.1), transparent);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h3 style="margin: 0;">New Diagnosis</h3>
+                        <p style="margin: 5px 0 0; font-size: 0.75rem; color: #94a3b8;">Start a new clinical assessment.</p>
+                    </div>
+                    <i class="fas fa-plus-circle" style="font-size: 2rem; color: var(--primary);"></i>
+                </div>
+            </div>
+
+            <div class="card" style="border-left: 4px solid var(--accent);">
+                <p style="margin: 0; font-size: 0.8rem; font-style: italic; color: #cbd5e1;">
+                    "Biomedical Engineering: The art of creating tools that save lives."
+                </p>
+            </div>
+        </div>
+
+        <div id="p-calc" class="page">
+            <h2 style="font-weight: 800;">Patient Vitals</h2>
             <div class="card">
-                <h3 style="margin-top:0;"><i class="fas fa-notes-medical" style="color:var(--primary)"></i> Patient Entry</h3>
-                <div class="gender-grid">
-                    <div class="g-card active-m" id="m" onclick="setG('male')"><i class="fas fa-mars"></i>MALE</div>
-                    <div class="g-card" id="f" onclick="setG('female')"><i class="fas fa-venus"></i>FEMALE</div>
+                <div style="margin-bottom: 20px;">
+                    <label style="font-size: 0.7rem; font-weight: 800; color: #475569;">FULL NAME</label>
+                    <input id="in-name" class="input-field" placeholder="John Doe">
                 </div>
-                <input id="name" class="input-box" placeholder="Patient Name" style="margin-bottom: 15px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                    <div>
+                        <label style="font-size: 0.7rem; font-weight: 800; color: #475569;">AGE</label>
+                        <input id="in-age" type="number" class="input-field" placeholder="Years">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.7rem; font-weight: 800; color: #475569;">GENDER</label>
+                        <select id="in-gender" class="input-field">
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
+                </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <input id="w" type="number" class="input-box" placeholder="Weight (kg)">
-                    <input id="h" type="number" step="0.01" class="input-box" placeholder="Height (m)">
+                    <div>
+                        <label style="font-size: 0.7rem; font-weight: 800; color: #475569;">WEIGHT (KG)</label>
+                        <input id="in-weight" type="number" class="input-field" placeholder="kg">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.7rem; font-weight: 800; color: #475569;">HEIGHT (M)</label>
+                        <input id="in-height" type="number" step="0.01" class="input-field" placeholder="e.g. 1.7">
+                    </div>
                 </div>
-                <button class="btn-action" style="margin-top: 25px;" onclick="run()">ANALYZE DATA</button>
+                <button class="btn-prime" style="margin-top: 30px;" onclick="process()">ANALYZE NOW</button>
             </div>
         </div>
 
-        <div id="result" class="page">
-            <div class="card" style="text-align: center;">
-                <div id="resVal" style="font-size: 3.5rem; font-weight: 800;">00.0</div>
-                <div id="resStat" style="font-weight: 800; letter-spacing: 2px;">NORMAL</div>
+        <div id="p-result" class="page">
+            <div class="card" style="text-align: center; overflow: hidden;">
+                <div style="font-size: 0.8rem; letter-spacing: 2px; color: #64748b; font-weight: 800;">BMI ANALYSIS SCORE</div>
+                <h1 id="res-bmi" style="font-size: 4.5rem; margin: 10px 0; font-weight: 900; color: var(--primary);">00.0</h1>
+                <div id="res-status" style="display: inline-block; padding: 5px 20px; border-radius: 20px; font-weight: 800; font-size: 0.8rem;">NORMAL</div>
                 
-                <div class="chart-box">
+                <div style="height: 150px; margin: 25px 0;">
                     <canvas id="gaugeChart"></canvas>
                 </div>
 
-                <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 15px; text-align: left; border-left: 4px solid var(--primary);">
-                    <div style="font-weight: 800; font-size: 0.8rem; margin-bottom: 5px;">CLINICAL ADVICE:</div>
-                    <p id="advice" style="font-size: 0.8rem; color: #94a3b8; margin: 0;"></p>
+                <div style="text-align: left; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 20px; border-left: 4px solid var(--primary);">
+                    <h4 style="margin: 0 0 10px; font-size: 0.9rem;"><i class="fas fa-user-md"></i> Clinical Advice</h4>
+                    <p id="res-advice" style="font-size: 0.85rem; color: #94a3b8; line-height: 1.5; margin: 0;"></p>
                 </div>
-                <button class="btn-action" style="margin-top: 25px;" onclick="save()">SAVE TO ARCHIVE</button>
+                <button class="btn-prime" style="margin-top: 25px;" onclick="saveRecord()">ARCHIVE RECORD</button>
             </div>
         </div>
 
-        <div id="db" class="page">
+        <div id="p-history" class="page">
+            <h2 style="font-weight: 800;">Health Archives</h2>
             <div class="card" style="padding: 15px;">
-                <h4 style="margin-top:0;"><i class="fas fa-chart-line"></i> Patient Trend Graph</h4>
-                <div style="height: 150px;">
-                    <canvas id="trendChart"></canvas>
-                </div>
+                <canvas id="trendChart" style="height: 180px;"></canvas>
             </div>
-            <div id="list"></div>
+            <div id="history-list"></div>
         </div>
+
     </div>
 
-    <nav>
-        <div onclick="showP('home')" id="n-home" class="active"><i class="fas fa-th-large"></i>Home</div>
-        <div onclick="showP('calc')" id="n-calc"><i class="fas fa-stethoscope"></i>Test</div>
-        <div onclick="showP('db')" id="n-db"><i class="fas fa-database"></i>History</div>
-    </nav>
+    <div class="nav-bar">
+        <div class="nav-item active" id="nav-home" onclick="navTo('home')"><i class="fas fa-th-large"></i></div>
+        <div class="nav-item" id="nav-calc" onclick="navTo('calc')"><i class="fas fa-vials"></i></div>
+        <div class="nav-item" id="nav-history" onclick="navTo('history')"><i class="fas fa-chart-bar"></i></div>
+    </div>
 
 <script>
-    let gender = 'male', gChart, tChart;
+    let gChart, tChart;
 
-    function toggleMenu() {
-        document.getElementById('drawer').classList.toggle('open');
-        const o = document.getElementById('overlay');
-        o.style.display = o.style.display === 'block' ? 'none' : 'block';
-    }
-
-    function setG(g) {
-        gender = g;
-        document.getElementById('m').classList.toggle('active-m', g==='male');
-        document.getElementById('f').classList.toggle('active-f', g==='female');
-    }
-
-    function showP(id) {
+    function navTo(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        document.querySelectorAll('nav div').forEach(d => d.classList.remove('active'));
-        document.getElementById('n-'+ (id==='result'?'calc':id)).classList.add('active');
-        if(id === 'db') loadHistory();
+        document.getElementById('p-' + id).classList.add('active');
+        
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        const navId = (id === 'result' || id === 'calc') ? 'calc' : id;
+        if(document.getElementById('nav-' + navId)) {
+            document.getElementById('nav-' + navId).classList.add('active');
+        }
+        
+        if(id === 'history') loadHistory();
     }
 
-    function run() {
-        const n = document.getElementById('name').value;
-        const w = document.getElementById('w').value;
-        const h = document.getElementById('h').value;
-        if(!n || !w || !h) return alert("System error: Missing data");
+    function process() {
+        const name = document.getElementById('in-name').value;
+        const age = document.getElementById('in-age').value;
+        const w = document.getElementById('in-weight').value;
+        const h = document.getElementById('in-height').value;
+        const gen = document.getElementById('in-gender').value;
+
+        if(!name || !w || !h) return alert("System requires full patient vitals.");
 
         const bmi = (w / (h*h)).toFixed(1);
-        let s = "Normal", c = "#2ecc71", a = "Perfect engineering. Maintain diet.";
+        let status = "NORMAL", color = "#00f2fe", advice = `Dear ${name}, your vitals are optimal. Keep maintaining your biomedical balance.`;
 
-        if(bmi < 18.5) { s="Underweight"; c="#f1c40f"; a="Increase caloric intake."; }
-        else if(bmi > 25) { s="Overweight"; c="#e67e22"; a="More activity needed."; }
+        if(bmi < 18.5) { 
+            status = "UNDERWEIGHT"; color = "#fbbf24"; 
+            advice = `Clinical Alert for ${name}: Your BMI is low. Recommend a high-protein diet and nutritional consultation.`; 
+        } else if(bmi > 25) { 
+            status = "OVERWEIGHT"; color = "#ef4444"; 
+            advice = `Metabolic Alert for ${name}: Increased strain detected. Recommend cardiovascular activity and caloric deficit.`; 
+        }
 
-        document.getElementById('resVal').innerText = bmi;
-        document.getElementById('resVal').style.color = c;
-        document.getElementById('resStat').innerText = s;
-        document.getElementById('resStat').style.color = c;
-        document.getElementById('advice').innerText = a;
+        document.getElementById('res-bmi').innerText = bmi;
+        document.getElementById('res-bmi').style.color = color;
+        document.getElementById('res-status').innerText = status;
+        document.getElementById('res-status').style.background = color + "33";
+        document.getElementById('res-status').style.color = color;
+        document.getElementById('res-advice').innerText = advice;
 
-        renderGauge(bmi, c);
-        window.currentRecord = { n, bmi, s, c, gender, d: new Date().toLocaleDateString() };
-        showP('result');
+        window.currentData = { name, bmi, status, color, date: new Date().toLocaleDateString(), gender: gen };
+        renderGauge(bmi, color);
+        navTo('result');
     }
 
     function renderGauge(val, col) {
@@ -223,66 +245,72 @@
                 datasets: [{
                     data: [val, 40-val],
                     backgroundColor: [col, 'rgba(255,255,255,0.05)'],
-                    borderWidth: 0,
-                    cutout: '85%',
-                    circumference: 180,
-                    rotation: 270
+                    borderWidth: 0, cutout: '85%', circumference: 180, rotation: 270
                 }]
             },
-            options: { plugins: { legend: { display: false } } }
+            options: { plugins: { legend: { display: false } }, responsive: true, maintainAspectRatio: false }
         });
     }
 
-    function save() {
-        let db = JSON.parse(localStorage.getItem('bionex_final_v3') || '[]');
-        db.unshift(window.currentRecord);
-        localStorage.setItem('bionex_final_v3', JSON.stringify(db));
-        alert("Encrypted & Saved.");
-        showP('db');
-        updateHome();
+    function saveRecord() {
+        let db = JSON.parse(localStorage.getItem('bionex_elite') || '[]');
+        db.unshift(window.currentData);
+        localStorage.setItem('bionex_elite', JSON.stringify(db));
+        alert("Clinical Record Archived.");
+        navTo('history');
+        updateStats();
     }
 
     function loadHistory() {
-        let db = JSON.parse(localStorage.getItem('bionex_final_v3') || '[]');
-        document.getElementById('list').innerHTML = db.map(l => `
-            <div class="card" style="display:flex; justify-content:space-between; align-items:center; padding: 15px;">
-                <div style="display:flex; gap:10px; align-items:center;">
-                    <i class="fas ${l.gender==='male'?'fa-mars':'fa-venus'}" style="color:${l.gender==='male'?'#4facfe':'#f093fb'}"></i>
-                    <div><b>${l.n}</b><br><small style="color:#64748b">${l.d}</small></div>
+        let db = JSON.parse(localStorage.getItem('bionex_elite') || '[]');
+        document.getElementById('history-list').innerHTML = db.map(l => `
+            <div class="card" style="display:flex; justify-content:space-between; align-items:center; padding:15px;">
+                <div style="display:flex; gap:12px; align-items:center;">
+                    <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:12px; color:${l.color}">
+                        <i class="fas ${l.gender === 'male' ? 'fa-mars' : 'fa-venus'}"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight:700; font-size:0.9rem;">${l.name}</div>
+                        <div style="font-size:0.7rem; color:#475569;">${l.date}</div>
+                    </div>
                 </div>
-                <div style="text-align:right"><b style="color:${l.c}">${l.bmi}</b><br><small>${l.s}</small></div>
+                <div style="text-align:right;">
+                    <div style="font-weight:800; color:${l.color};">${l.bmi}</div>
+                    <div style="font-size:0.6rem; color:#475569;">${l.status}</div>
+                </div>
             </div>
-        `).join('');
-
+        `).join('') || '<p style="text-align:center; color:#475569;">No records found.</p>';
         if(db.length > 0) renderTrend(db);
     }
 
     function renderTrend(db) {
         const ctx = document.getElementById('trendChart').getContext('2d');
         if(tChart) tChart.destroy();
-        const data = [...db].reverse();
+        const reversed = [...db].reverse();
         tChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: data.map(i => i.n.split(' ')[0]),
+                labels: reversed.map(i => i.name.split(' ')[0]),
                 datasets: [{
-                    data: data.map(i => i.bmi),
+                    data: reversed.map(i => i.bmi),
                     borderColor: '#00f2fe',
                     backgroundColor: 'rgba(0, 242, 254, 0.1)',
-                    fill: true,
-                    tension: 0.4
+                    fill: true, tension: 0.4, borderWidth: 3, pointRadius: 2
                 }]
             },
-            options: { plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { ticks: { color: '#64748b', font: { size: 10 } } } } }
+            options: { 
+                plugins: { legend: { display: false } }, 
+                scales: { x: { display: false }, y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#475569' } } } 
+            }
         });
     }
 
-    function updateHome() {
-        let db = JSON.parse(localStorage.getItem('bionex_final_v3') || '[]');
-        document.getElementById('total').innerText = db.length;
+    function updateStats() {
+        let db = JSON.parse(localStorage.getItem('bionex_elite') || '[]');
+        document.getElementById('total-count').innerText = db.length;
     }
 
-    window.onload = updateHome;
+    window.onload = updateStats;
 </script>
 </body>
 </html>
