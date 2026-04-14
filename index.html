@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bionex 360 | Founder: Eng. Allan</title>
+    <title>Smart Health App | Founder: Eng. Allan</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -11,249 +11,242 @@
     <style>
         :root {
             --primary: #00f2fe; --accent: #7000ff; --danger: #ff4757; 
-            --warning: #ffa502; --success: #2ed573; --bg: #030712;
-            --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1);
+            --warning: #ffa502; --success: #2ed573; --bg: #010409;
+            --glass: rgba(255, 255, 255, 0.03); --border: rgba(255, 255, 255, 0.08);
         }
 
-        * { box-sizing: border-box; transition: all 0.3s ease; }
+        * { box-sizing: border-box; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         body {
             font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg);
-            color: #ffffff; margin: 0; min-height: 100vh; overflow-x: hidden;
+            color: #ffffff; margin: 0; min-height: 100vh; overflow: hidden;
         }
 
-        /* Ambient Background */
-        .glow-bg { position: fixed; width: 500px; height: 500px; border-radius: 50%; filter: blur(150px); opacity: 0.15; z-index: -1; }
-        .g1 { background: var(--primary); top: -200px; left: -200px; }
-        .g2 { background: var(--accent); bottom: -200px; right: -200px; }
+        /* Animated Background */
+        .orb { position: fixed; border-radius: 50%; filter: blur(100px); z-index: -1; opacity: 0.2; }
+        .orb-1 { width: 300px; height: 300px; background: var(--primary); top: -10%; left: -10%; }
+        .orb-2 { width: 400px; height: 400px; background: var(--accent); bottom: -10%; right: -10%; }
 
-        .container { width: 100%; max-width: 450px; margin: 0 auto; padding: 25px; padding-bottom: 120px; }
+        .container { width: 100%; max-width: 450px; margin: 0 auto; padding: 20px; height: 100vh; position: relative; overflow-y: auto; padding-bottom: 110px; }
 
-        /* Page Transitions */
-        .page { display: none; animation: slideIn 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
+        /* Page System */
+        .page { display: none; animation: scaleUp 0.5s ease; }
         .page.active { display: block; }
-        @keyframes slideIn { from { opacity: 0; transform: scale(0.95); filter: blur(10px); } to { opacity: 1; transform: scale(1); filter: blur(0); } }
+        @keyframes scaleUp { from { opacity: 0; transform: scale(0.9); filter: blur(10px); } to { opacity: 1; transform: scale(1); filter: blur(0); } }
 
-        /* UI Elements */
-        .glass-card { background: var(--glass); border: 1px solid var(--border); border-radius: 35px; padding: 25px; margin-bottom: 20px; backdrop-filter: blur(20px); }
-        .btn-main {
-            width: 100%; padding: 20px; border-radius: 22px; border: none;
+        /* Cards */
+        .glass-card { background: var(--glass); border: 1px solid var(--border); border-radius: 30px; padding: 25px; margin-bottom: 20px; backdrop-filter: blur(30px); }
+        
+        /* Buttons */
+        .btn-glow {
+            width: 100%; padding: 20px; border-radius: 20px; border: none;
             background: linear-gradient(135deg, var(--primary), var(--accent));
             color: #000; font-weight: 800; font-size: 1rem; cursor: pointer;
-            box-shadow: 0 10px 30px rgba(0,242,254,0.3);
+            box-shadow: 0 10px 30px rgba(0,242,254,0.2); display: flex; align-items: center; justify-content: center; gap: 10px;
         }
 
-        /* Interactive Sliders */
-        .slider-container { margin-bottom: 25px; }
-        .slider-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .slider-label { font-size: 0.75rem; font-weight: 800; color: #64748b; letter-spacing: 1px; }
-        .slider-val { font-size: 1.2rem; font-weight: 800; color: var(--primary); }
-        input[type=range] { width: 100%; appearance: none; background: rgba(255,255,255,0.1); height: 8px; border-radius: 10px; outline: none; }
-        input[type=range]::-webkit-slider-thumb { appearance: none; width: 22px; height: 22px; background: white; border-radius: 50%; cursor: pointer; border: 4px solid var(--primary); }
+        /* Inputs */
+        .input-wrap { margin-bottom: 20px; }
+        .label { font-size: 0.75rem; font-weight: 800; color: #555; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; display: block; }
+        
+        /* Gender Selection Modal */
+        .gender-box {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+            padding: 18px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;
+        }
+        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 2000; display:none; align-items: center; justify-content: center; }
+        .modal { width: 85%; max-width: 350px; background: #0a0a0a; border: 1px solid var(--border); border-radius: 35px; padding: 30px; text-align: center; }
+        .gender-option {
+            padding: 20px; border-radius: 20px; margin: 10px 0; border: 1px solid var(--border); cursor: pointer;
+            font-size: 1.2rem; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 15px;
+        }
+        .gender-option:hover { background: var(--primary); color: #000; }
 
-        /* Gender Switch */
-        .switch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0; }
-        .s-btn { background: rgba(0,0,0,0.3); border: 1px solid var(--border); padding: 18px; border-radius: 20px; text-align: center; cursor: pointer; font-weight: 800; font-size: 0.8rem; }
-        .s-btn.active { background: var(--primary); color: #000; border-color: var(--primary); }
+        /* Sliders */
+        input[type=range] { width: 100%; appearance: none; background: rgba(255,255,255,0.1); height: 6px; border-radius: 10px; margin-top: 10px; }
+        input[type=range]::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; background: white; border-radius: 50%; cursor: pointer; box-shadow: 0 0 15px var(--primary); }
 
         /* Navigation */
         .nav-float {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            width: 320px; height: 75px; background: rgba(15, 23, 42, 0.9);
-            backdrop-filter: blur(30px); border-radius: 38px; border: 1px solid var(--border);
-            display: flex; justify-content: space-around; align-items: center; z-index: 1000;
+            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
+            width: 300px; height: 75px; background: rgba(10, 10, 10, 0.9);
+            border-radius: 35px; border: 1px solid var(--border); display: flex;
+            justify-content: space-around; align-items: center; z-index: 1000; backdrop-filter: blur(20px);
         }
-        .nav-item { color: #475569; font-size: 1.4rem; cursor: pointer; }
-        .nav-item.active { color: var(--primary); text-shadow: 0 0 20px var(--primary); }
+        .nav-item { color: #444; font-size: 1.4rem; cursor: pointer; position: relative; }
+        .nav-item.active { color: var(--primary); text-shadow: 0 0 10px var(--primary); }
+
+        /* Result */
+        .bmi-val { font-size: 5rem; font-weight: 900; line-height: 1; margin: 10px 0; background: linear-gradient(to bottom, #fff, #666); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     </style>
 </head>
 <body>
 
-    <div class="glow-bg g1"></div>
-    <div class="glow-bg g2"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <div class="modal-overlay" id="gModal">
+        <div class="modal">
+            <h3 style="margin-top:0;">Select Gender 🧬</h3>
+            <div class="gender-option" onclick="pickG('Male', '👨')"><span>👨</span> MALE</div>
+            <div class="gender-option" onclick="pickG('Female', '👩')"><span>👩</span> FEMALE</div>
+        </div>
+    </div>
 
     <div class="container">
         
         <div id="p-intro" class="page active">
-            <div style="text-align: center; margin-top: 60px;">
-                <div style="display: inline-block; padding: 15px; background: var(--glass); border-radius: 30px; margin-bottom: 20px;">
-                    <i class="fas fa-dna" style="font-size: 3rem; color: var(--primary); animation: pulse 2s infinite;"></i>
-                </div>
-                <h1 style="font-size: 2.8rem; font-weight: 800; margin: 0; line-height: 1;">BIONEX<br><span style="color: var(--primary);">360</span></h1>
-                <p style="color: #64748b; font-size: 1rem; margin-top: 15px;">Clinical Precision Intelligence</p>
+            <div style="text-align: center; margin-top: 80px;">
+                <div style="font-size: 4rem;">🩺</div>
+                <h1 style="font-size: 2.5rem; font-weight: 800; margin: 10px 0;">Smart Health<br><span style="color: var(--primary);">App</span></h1>
+                <p style="color: #666; line-height: 1.6;">Smart Clinical Intelligence for physiological tracking & analysis.</p>
                 
-                <div class="glass-card" style="margin-top: 40px; text-align: left; background: linear-gradient(135deg, rgba(255,255,255,0.05), transparent);">
-                    <h4 style="margin:0 0 10px; color: var(--primary);"><i class="fas fa-info-circle"></i> App Purpose</h4>
-                    <p style="font-size: 0.8rem; line-height: 1.6; color: #cbd5e1; margin: 0;">
-                        Bionex 360 is an advanced biomedical tool designed for real-time physiological assessment. It analyzes body composition, identifies clinical risks, and provides professional health protocols based on MUHAS engineering standards.
-                    </p>
+                <div class="glass-card" style="margin-top: 40px; text-align: left;">
+                    <div style="display: flex; gap: 15px; align-items: center;">
+                        <i class="fas fa-biohazard" style="font-size: 2rem; color: var(--primary);"></i>
+                        <div style="font-size: 0.8rem; color: #888;">Powered by <b>Bionex Engine</b> for professional medical calculations.</div>
+                    </div>
                 </div>
 
-                <div style="margin-top: 30px;">
-                    <span style="font-size: 0.65rem; color: #475569; font-weight: 800; letter-spacing: 2px;">FOUNDER & LEAD ENGINEER</span>
-                    <div style="font-size: 1.2rem; font-weight: 800; color: #fff; margin-top: 5px;">ENG. ALLAN</div>
+                <div style="margin-top: 40px;">
+                    <span style="font-size: 0.6rem; color: var(--primary); font-weight: 800; letter-spacing: 2px;">APP FOUNDER</span>
+                    <div style="font-size: 1.2rem; font-weight: 800;">Eng. Allan 🚀</div>
                 </div>
 
-                <button class="btn-main" style="margin-top: 40px;" onclick="navTo('home')">INITIALIZE SYSTEM <i class="fas fa-power-off" style="margin-left: 10px;"></i></button>
+                <button class="btn-glow" style="margin-top: 50px;" onclick="navTo('home')">Get Started <i class="fas fa-chevron-right"></i></button>
             </div>
         </div>
 
         <div id="p-home" class="page">
             <header style="margin-bottom: 30px;">
-                <h1 style="margin: 0; font-size: 1.8rem; font-weight: 800;">Hello, Welcome Eng.</h1>
-                <p style="color: #64748b; margin-top: 5px;">Founder Dashboard | Bionex Corp.</p>
+                <h1 style="margin:0; font-weight: 800;">Hello, Welcome Eng. 👋</h1>
+                <p style="color: #666; margin-top: 5px;">Your health dashboard is ready.</p>
             </header>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-                <div class="glass-card" style="margin:0; text-align: center;">
-                    <i class="fas fa-microchip" style="color: var(--primary); font-size: 1.5rem; margin-bottom: 10px;"></i>
-                    <div id="total-val" style="font-size: 1.8rem; font-weight: 800;">0</div>
-                    <div style="font-size: 0.6rem; color: #64748b;">TOTAL DIAGNOSIS</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="glass-card" style="margin: 0; text-align: center;">
+                    <div style="font-size: 1.5rem;">📁</div>
+                    <div id="stat-count" style="font-size: 1.5rem; font-weight: 800; margin-top: 10px;">0</div>
+                    <div style="font-size: 0.6rem; color: #555;">RECORDS</div>
                 </div>
-                <div class="glass-card" style="margin:0; text-align: center;">
-                    <i class="fas fa-server" style="color: var(--accent); font-size: 1.5rem; margin-bottom: 10px;"></i>
-                    <div style="font-size: 1.2rem; font-weight: 800; color: var(--success);">READY</div>
-                    <div style="font-size: 0.6rem; color: #64748b;">LOCAL DATABASE</div>
+                <div class="glass-card" style="margin: 0; text-align: center;">
+                    <div style="font-size: 1.5rem;">🔥</div>
+                    <div style="font-size: 1.2rem; font-weight: 800; margin-top: 10px; color: var(--success);">ACTIVE</div>
+                    <div style="font-size: 0.6rem; color: #555;">SYSTEM STATUS</div>
                 </div>
             </div>
 
-            <div class="glass-card" onclick="navTo('calc')" style="cursor: pointer; background: linear-gradient(135deg, rgba(0,242,254,0.1), transparent); border-color: var(--primary);">
+            <div class="glass-card" style="margin-top: 20px; border-left: 5px solid var(--primary);" onclick="navTo('calc')">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
-                        <h3 style="margin: 0;">Clinical Assessment</h3>
-                        <p style="margin: 5px 0 0; font-size: 0.75rem; color: #94a3b8;">Start patient physiological scan.</p>
+                        <h3 style="margin:0;">Start Analysis 🧪</h3>
+                        <p style="margin:5px 0 0; font-size: 0.7rem; color: #666;">New physiological assessment.</p>
                     </div>
-                    <div style="width: 50px; height: 50px; background: var(--primary); border-radius: 15px; display: flex; align-items: center; justify-content: center; color: #000;">
-                        <i class="fas fa-stethoscope" style="font-size: 1.4rem;"></i>
-                    </div>
-                </div>
-            </div>
-
-            <div class="glass-card" style="border-left: 4px solid var(--primary);">
-                <div style="display: flex; gap: 15px; align-items: center;">
-                    <div style="font-size: 2rem; opacity: 0.5;"><i class="fas fa-quote-left"></i></div>
-                    <p style="margin: 0; font-size: 0.85rem; font-style: italic; color: #cbd5e1;">"Engineering health solutions for a better tomorrow."</p>
+                    <i class="fas fa-arrow-right" style="color: var(--primary);"></i>
                 </div>
             </div>
         </div>
 
         <div id="p-calc" class="page">
-            <h2 style="font-weight: 800;"><i class="fas fa-fingerprint" style="color:var(--primary)"></i> Patient Vitals</h2>
+            <h2 style="font-weight: 800;">Diagnostics 🔬</h2>
             <div class="glass-card">
-                <div style="margin-bottom: 25px;">
-                    <label class="slider-label">PATIENT NAME</label>
-                    <input id="in-name" type="text" style="width:100%; background:rgba(0,0,0,0.2); border:1px solid var(--border); border-radius:15px; padding:15px; color:white; margin-top:10px; outline:none;" placeholder="Enter name">
+                <div class="input-wrap">
+                    <span class="label">Patient Name</span>
+                    <input id="in-name" type="text" style="width:100%; background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:15px; padding:15px; color:white; outline:none;" placeholder="John Doe">
                 </div>
 
-                <div class="slider-container">
-                    <div class="slider-header">
-                        <span class="slider-label">GENDER</span>
-                    </div>
-                    <div class="switch-grid">
-                        <div id="g-m" class="s-btn active" onclick="setG('male')"><i class="fas fa-mars"></i> MALE</div>
-                        <div id="g-f" class="s-btn" onclick="setG('female')"><i class="fas fa-venus"></i> FEMALE</div>
+                <div class="input-wrap">
+                    <span class="label">Choose Gender</span>
+                    <div class="gender-box" onclick="openG()">
+                        <span id="txt-gender" style="font-weight: 800; color: #888;">Tap to Select...</span>
+                        <i class="fas fa-chevron-down" style="font-size: 0.8rem; color: var(--primary);"></i>
                     </div>
                 </div>
 
-                <div class="slider-container">
-                    <div class="slider-header">
-                        <span class="slider-label">AGE (YEARS)</span>
-                        <span id="v-age" class="slider-val">25</span>
-                    </div>
-                    <input id="in-age" type="range" min="1" max="100" value="25" oninput="uV('age', this.value)">
+                <div class="input-wrap">
+                    <div style="display: flex; justify-content: space-between;"><span class="label">Age</span><b id="v-age" style="color:var(--primary)">25</b></div>
+                    <input id="in-age" type="range" min="1" max="100" value="25" oninput="u('age', this.value)">
                 </div>
 
-                <div class="slider-container">
-                    <div class="slider-header">
-                        <span class="slider-label">WEIGHT (KG)</span>
-                        <span id="v-weight" class="slider-val">70</span>
-                    </div>
-                    <input id="in-weight" type="range" min="20" max="200" value="70" oninput="uV('weight', this.value)">
+                <div class="input-wrap">
+                    <div style="display: flex; justify-content: space-between;"><span class="label">Weight (kg)</span><b id="v-weight" style="color:var(--primary)">70</b></div>
+                    <input id="in-weight" type="range" min="10" max="200" value="70" oninput="u('weight', this.value)">
                 </div>
 
-                <div class="slider-container">
-                    <div class="slider-header">
-                        <span class="slider-label">HEIGHT (METERS)</span>
-                        <span id="v-height" class="slider-val">1.70</span>
-                    </div>
-                    <input id="in-height" type="range" min="1.0" max="2.5" step="0.01" value="1.70" oninput="uV('height', this.value)">
+                <div class="input-wrap">
+                    <div style="display: flex; justify-content: space-between;"><span class="label">Height (m)</span><b id="v-height" style="color:var(--primary)">1.70</b></div>
+                    <input id="in-height" type="range" min="0.5" max="2.5" step="0.01" value="1.70" oninput="u('height', this.value)">
                 </div>
 
-                <button class="btn-main" style="margin-top: 10px;" onclick="analyze()">RUN PHYSIOLOGY SCAN</button>
+                <button class="btn-glow" onclick="runScan()">Analyze Now ⚡</button>
             </div>
         </div>
 
         <div id="p-result" class="page">
             <div class="glass-card" style="text-align: center;">
-                <h4 style="margin: 0; letter-spacing: 2px; color: #64748b; font-size: 0.7rem;">BMI ANALYSIS INDEX</h4>
-                <div id="res-bmi" style="font-size: 4.5rem; font-weight: 900; margin: 10px 0; line-height: 1;">00.0</div>
-                <div id="res-status" style="display: inline-block; padding: 8px 25px; border-radius: 15px; font-weight: 800; font-size: 0.9rem; margin-bottom: 20px;">NORMAL</div>
+                <div id="res-status" style="display: inline-block; padding: 5px 15px; border-radius: 10px; font-weight: 800; font-size: 0.7rem; letter-spacing: 1px;">NORMAL</div>
+                <div class="bmi-val" id="res-bmi">24.5</div>
                 
                 <div style="height: 160px; margin-bottom: 20px;">
                     <canvas id="gaugeChart"></canvas>
                 </div>
 
-                <div style="text-align: left; background: rgba(0,0,0,0.3); padding: 25px; border-radius: 25px; border-left: 5px solid var(--primary);">
-                    <h4 style="margin: 0 0 10px; color: #fff; font-size: 0.9rem;"><i class="fas fa-user-md" style="color:var(--primary)"></i> Professional Medical Protocol</h4>
-                    <p id="res-advice" style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.6; margin: 0;"></p>
+                <div style="text-align: left; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 20px; border-left: 4px solid var(--primary);">
+                    <h4 style="margin: 0 0 10px; color: #fff;"><i class="fas fa-user-md"></i> Clinical Advice 🩺</h4>
+                    <p id="res-advice" style="font-size: 0.8rem; color: #888; line-height: 1.6; margin: 0;"></p>
                 </div>
-
-                <button class="btn-main" style="margin-top: 30px;" onclick="save()">ARCHIVE DATA</button>
+                <button class="btn-glow" style="margin-top: 30px;" onclick="save()">Archive Record 📁</button>
             </div>
         </div>
 
         <div id="p-history" class="page">
-            <h2 style="font-weight: 800;">Analytics History</h2>
+            <h2 style="font-weight: 800;">Analytics History 📊</h2>
             <div class="glass-card" style="padding: 15px;">
-                <canvas id="trendChart" style="height: 200px;"></canvas>
+                <canvas id="trendChart" style="height: 180px;"></canvas>
             </div>
-            <div id="list"></div>
+            <div id="list-items"></div>
         </div>
 
     </div>
 
     <div class="nav-float">
-        <div class="nav-item active" id="n-home" onclick="navTo('home')"><i class="fas fa-th-large"></i></div>
-        <div class="nav-item" id="n-calc" onclick="navTo('calc')"><i class="fas fa-microscope"></i></div>
-        <div class="nav-item" id="n-history" onclick="navTo('history')"><i class="fas fa-database"></i></div>
+        <div class="nav-item active" id="n-home" onclick="navTo('home')"><i class="fas fa-home"></i></div>
+        <div class="nav-item" id="n-calc" onclick="navTo('calc')"><i class="fas fa-heartbeat"></i></div>
+        <div class="nav-item" id="n-history" onclick="navTo('history')"><i class="fas fa-history"></i></div>
     </div>
 
 <script>
-    let gen = 'male', gChart, tChart;
+    let currentGender = '', gChart, tChart;
 
-    function uV(id, v) { document.getElementById('v-' + id).innerText = v; }
-    function setG(g) {
-        gen = g;
-        document.getElementById('g-m').classList.toggle('active', g === 'male');
-        document.getElementById('g-f').classList.toggle('active', g === 'female');
+    function u(id, v) { document.getElementById('v-' + id).innerText = v; }
+    function openG() { document.getElementById('gModal').style.display = 'flex'; }
+    function pickG(g, e) {
+        currentGender = g;
+        document.getElementById('txt-gender').innerText = e + ' ' + g;
+        document.getElementById('txt-gender').style.color = 'var(--primary)';
+        document.getElementById('gModal').style.display = 'none';
     }
 
     function navTo(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById('p-' + id).classList.add('active');
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        let ni = (id === 'result' || id === 'calc') ? 'calc' : id;
-        if(document.getElementById('n-' + ni)) document.getElementById('n-' + ni).classList.add('active');
-        if(id === 'history') load();
+        let targetNav = (id === 'result' || id === 'calc') ? 'calc' : id;
+        if(document.getElementById('n-' + targetNav)) document.getElementById('n-' + targetNav).classList.add('active');
+        if(id === 'history') loadHistory();
     }
 
-    function analyze() {
+    function runScan() {
         const name = document.getElementById('in-name').value;
-        const age = document.getElementById('in-age').value;
         const w = document.getElementById('in-weight').value;
         const h = document.getElementById('in-height').value;
-
-        if(!name) return alert("System requires Patient Name.");
+        if(!name || !currentGender) return alert("Please fill Patient Details ⚠️");
 
         const bmi = (w / (h*h)).toFixed(1);
-        let s = "NORMAL", c = "#2ed573", a = `Hello ${name}, your physiological profile is optimal. Your current BMI indicates a healthy balance between mass and height. Maintain your current diet and activity level.`;
+        let s = "NORMAL", c = "#2ed573", a = `Hello ${name}, your health metrics are within the standard physiological range. Keep up the good work! 🍏`;
 
-        if(bmi < 18.5) { 
-            s = "UNDERWEIGHT"; c = "#ffa502"; a = `Clinical Alert: ${name}, your BMI index is below the physiological threshold. This may indicate nutritional deficiency or metabolic imbalance. Increase caloric intake with high-quality proteins and carbohydrates.`;
-        } else if(bmi >= 25 && bmi < 30) { 
-            s = "OVERWEIGHT"; c = "#ff4757"; a = `Clinical Note: ${name}, your BMI indicates a surplus of body mass. This increases cardiovascular strain. Recommend 150 minutes of moderate aerobic activity weekly and refined carbohydrate restriction.`;
-        } else if(bmi >= 30) {
-            s = "OBESE"; c = "#eb2f06"; a = `MEDICAL ALERT: ${name}, your profile indicates clinical Obesity. This is a high-risk state for hypertension, Type II diabetes, and metabolic syndrome. Urgent intervention through a structured caloric deficit and professional medical consultation is advised.`;
-        }
+        if(bmi < 18.5) { s = "UNDERWEIGHT"; c = "#ffa502"; a = `Hello ${name}, your BMI is low. Consider a high-calorie balanced diet and muscle-building exercise. 🍲`; }
+        else if(bmi >= 25 && bmi < 30) { s = "OVERWEIGHT"; c = "#ff4757"; a = `Clinical Note: ${name}, your BMI shows extra mass. Focus on cardio and low-carb meals to reduce strain. 🏃‍♂️`; }
+        else if(bmi >= 30) { s = "OBESE"; c = "#eb2f06"; a = `Medical Alert: ${name}, your BMI is in the Obesity range. This poses serious health risks. Urgent physical activity and medical consultation advised. 🚨`; }
 
         document.getElementById('res-bmi').innerText = bmi;
         document.getElementById('res-bmi').style.color = c;
@@ -262,7 +255,7 @@
         document.getElementById('res-status').style.color = c;
         document.getElementById('res-advice').innerText = a;
 
-        window.tmp = { name, bmi, s, c, date: new Date().toLocaleDateString(), gen, age };
+        window.tmp = { name, bmi, s, c, gender: currentGender, date: new Date().toLocaleDateString() };
         renderGauge(bmi, c);
         navTo('result');
     }
@@ -272,39 +265,37 @@
         if(gChart) gChart.destroy();
         gChart = new Chart(ctx, {
             type: 'doughnut',
-            data: { datasets: [{ data: [v, 40-v], backgroundColor: [col, 'rgba(255,255,255,0.05)'], borderWidth: 0, cutout: '85%', circumference: 180, rotation: 270 }] },
+            data: { datasets: [{ data: [v, 40-v], backgroundColor: [col, 'rgba(255,255,255,0.03)'], borderWidth: 0, cutout: '85%', circumference: 180, rotation: 270 }] },
             options: { plugins: { legend: { display: false } }, responsive: true, maintainAspectRatio: false }
         });
     }
 
     function save() {
-        let db = JSON.parse(localStorage.getItem('bionex_final_v5') || '[]');
+        let db = JSON.parse(localStorage.getItem('smart_health_db') || '[]');
         db.unshift(window.tmp);
-        localStorage.setItem('bionex_final_v5', JSON.stringify(db));
-        alert("Clinical Record Archived.");
+        localStorage.setItem('smart_health_db', JSON.stringify(db));
+        alert("Record Saved Successfully! ✅");
         navTo('history');
-        upHome();
+        updateStats();
     }
 
-    function load() {
-        let db = JSON.parse(localStorage.getItem('bionex_final_v5') || '[]');
-        document.getElementById('list').innerHTML = db.map(l => `
+    function loadHistory() {
+        let db = JSON.parse(localStorage.getItem('smart_health_db') || '[]');
+        document.getElementById('list-items').innerHTML = db.map(l => `
             <div class="glass-card" style="padding:15px; display:flex; justify-content:space-between; align-items:center;">
                 <div style="display:flex; gap:12px; align-items:center;">
-                    <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:12px; color:${l.c}">
-                        <i class="fas ${l.gen === 'male' ? 'fa-mars' : 'fa-venus'}"></i>
-                    </div>
+                    <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:12px;">${l.gender === 'Male' ? '👨' : '👩'}</div>
                     <div>
-                        <div style="font-weight:700; font-size:0.9rem;">${l.name} (${l.age}y)</div>
-                        <div style="font-size:0.7rem; color:#475569;">${l.date}</div>
+                        <div style="font-weight:700; font-size:0.9rem;">${l.name}</div>
+                        <div style="font-size:0.7rem; color:#555;">${l.date}</div>
                     </div>
                 </div>
                 <div style="text-align:right;">
                     <div style="font-weight:800; color:${l.c}">${l.bmi}</div>
-                    <div style="font-size:0.6rem; color:#475569;">${l.s}</div>
+                    <div style="font-size:0.6rem; color:#555;">${l.s}</div>
                 </div>
             </div>
-        `).join('') || '<p style="text-align:center; color:#475569;">No archives.</p>';
+        `).join('') || '<p style="text-align:center; color:#555;">Empty Archive.</p>';
         if(db.length > 0) renderTrend(db);
     }
 
@@ -318,16 +309,16 @@
                 labels: rev.map(i => i.name.split(' ')[0]),
                 datasets: [{ data: rev.map(i => i.bmi), borderColor: '#00f2fe', backgroundColor: 'rgba(0, 242, 254, 0.1)', fill: true, tension: 0.4, borderWidth: 3, pointRadius: 0 }]
             },
-            options: { plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#475569' } } } }
+            options: { plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#555' } } } }
         });
     }
 
-    function upHome() {
-        let db = JSON.parse(localStorage.getItem('bionex_final_v5') || '[]');
-        document.getElementById('total-val').innerText = db.length;
+    function updateStats() {
+        let db = JSON.parse(localStorage.getItem('smart_health_db') || '[]');
+        document.getElementById('stat-count').innerText = db.length;
     }
 
-    window.onload = upHome;
+    window.onload = updateStats;
 </script>
 </body>
 </html>
